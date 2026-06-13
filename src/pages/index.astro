@@ -9,11 +9,40 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 <html lang="en">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			.badge {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				height: 1.6em;
+				padding: 0 0.65rem;
+				border-radius: 999px;
+				color: white;
+				font-weight: bold;
+				line-height: 1;
+				white-space: nowrap;
+				vertical-align: middle;
+			}
+			.badge + .badge {
+				margin-left: 0.35rem;
+			}
+			.badge-211 {
+				background-color: #ff69b4;
+			}
+			.badge-shuang {
+				background-color: #4169e1;
+			}
+		</style>
 	</head>
 	<body>
 		<Header />
 		<main>
 			<h1>This is Navi Lee!😘</h1>
+			<p>
+				太原理工大学
+				<span class="badge badge-211">211</span><span class="badge badge-shuang">双一流</span>
+				| 软件工程 | 2029届本科
+			</p>
 			<p>
 				这是Navi Lee的网站。旧版网站:<a href="https://legacy.navilee.com">Legacy.navilee.com</a>
 			</p>
