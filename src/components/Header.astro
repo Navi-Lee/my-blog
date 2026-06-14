@@ -51,12 +51,15 @@ import HeaderLink from './HeaderLink.astro';
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 0.5rem 1rem;
 	}
 
 	.internal-links {
 		display: flex;
 		gap: 0.5rem;
 		white-space: nowrap;
+		flex-wrap: wrap;
 	}
 	nav a {
 		padding: 1em 0.5em;
@@ -98,6 +101,23 @@ import HeaderLink from './HeaderLink.astro';
 	}
 
 	@media (max-width: 720px) {
+		header {
+			text-align: center;
+		}
+
+		nav {
+			justify-content: center;
+		}
+
+		.internal-links {
+			justify-content: center;
+			white-space: normal;
+		}
+
+		.theme-toggle-container {
+			margin-left: 0;
+		}
+
 		.social-links {
 			display: none;
 		}
