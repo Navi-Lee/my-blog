@@ -4,33 +4,38 @@ import HeaderLink from './HeaderLink.astro';
 ---
 
 <header>
-	<nav>
-		<h2><a href="/">{SITE_TITLE}</a></h2>
-		<div class="internal-links">
-			<HeaderLink href="/">主页</HeaderLink>
-			<HeaderLink href="/blog">Blog</HeaderLink>
-			<HeaderLink href="/about">关于我</HeaderLink>
-			<HeaderLink href="mailto:Leenavi@foxmail.com">Email<HeaderLink>
-		</div>
-		<div class="social-links">
-			
-			<a href="https://github.com/navi-lee" target="_blank">
-				<span class="sr-only">Go to Navi Lee's GitHub</span>
-				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
-					><path
-						fill="currentColor"
-						d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
-					></path></svg
-				>
-			</a>
-		</div>
-	</nav>
+ 	<nav>
+ 		<h2><a href="/">{SITE_TITLE}</a></h2>
+ 		<div class="internal-links">
+ 			<HeaderLink href="/">主页</HeaderLink>
+ 			<HeaderLink href="/blog">Blog</HeaderLink>
+ 			<HeaderLink href="/about">关于我</HeaderLink>
+ 			<HeaderLink href="mailto:Leenavi@foxmail.com">Email</HeaderLink>
+ 		</div>
+
+ 		<div class="theme-toggle-container">
+ 			<button id="theme-toggle" class="theme-toggle" aria-label="切换主题" title="切换主题" aria-pressed="false">🌙</button>
+ 		</div>
+
+ 		<div class="social-links">
+ 			
+ 			<a href="https://github.com/navi-lee" target="_blank">
+ 				<span class="sr-only">Go to Navi Lee's GitHub</span>
+ 				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32"
+ 					><path
+ 						fill="currentColor"
+ 						d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+ 					></path></svg
+ 				>
+ 			</a>
+ 		</div>
+ 	</nav>
 </header>
 <style>
 	header {
 		margin: 0;
 		padding: 0 1em;
-		background: white;
+		background: rgb(var(--surface));
 		box-shadow: 0 2px 8px rgba(var(--black), 5%);
 	}
 	h2 {
@@ -55,7 +60,7 @@ import HeaderLink from './HeaderLink.astro';
 	}
 	nav a {
 		padding: 1em 0.5em;
-		color: var(--black);
+		color: rgb(var(--black));
 		border-bottom: 4px solid transparent;
 		text-decoration: none;
 	}
@@ -67,9 +72,78 @@ import HeaderLink from './HeaderLink.astro';
 	.social-links a {
 		display: flex;
 	}
+
+	.theme-toggle-container {
+		display: flex;
+		align-items: center;
+		margin-left: 0.5rem;
+	}
+	.theme-toggle {
+		width: 34px;
+		height: 34px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		border: none;
+		background: rgba(var(--black), 0.06);
+		color: rgb(var(--black));
+		font-size: 16px;
+		cursor: pointer;
+	}
+	.theme-toggle:focus {
+		outline: 2px solid rgba(var(--black), 10%);
+		outline-offset: 2px;
+		border-radius: 6px;
+	}
+
 	@media (max-width: 720px) {
 		.social-links {
 			display: none;
 		}
 	}
 </style>
+
+<script>
+  (function () {
+    const root = document.documentElement;
+    const toggleId = 'theme-toggle';
+
+		function setTheme(theme: string) {
+			root.setAttribute('data-theme', theme);
+			try { localStorage.setItem('theme', theme); } catch (e) {}
+			// Keep inline background/color in sync to avoid a momentary flash
+			if (theme === 'dark') {
+				root.style.backgroundColor = '#0a0c14';
+				root.style.color = '#eaeef6';
+			} else {
+				root.style.backgroundColor = '';
+				root.style.color = '';
+			}
+			const btn = document.getElementById(toggleId);
+			if (btn) {
+				btn.textContent = theme === 'dark' ? '☀' : '🌙';
+				btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+			}
+		}
+
+    function init() {
+      const saved = (() => {
+        try { return localStorage.getItem('theme'); } catch (e) { return null; }
+      })();
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setTheme(saved || (prefersDark ? 'dark' : 'light'));
+
+      const btn = document.getElementById(toggleId);
+      if (btn) btn.addEventListener('click', () => {
+        setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
