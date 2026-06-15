@@ -61,21 +61,36 @@ const postsData = posts.map(post => ({
 				border-color: rgb(var(--accent));
 			}
 			.search-input {
-				width: 100%;
-				padding: 0.75rem 1rem;
-				font-size: 1rem;
-				border: 2px solid rgb(var(--gray-light));
-				border-radius: 8px;
-				background: rgb(var(--surface));
-				color: rgb(var(--gray-dark));
-				transition: border-color 0.2s ease;
+				width: 100% !important;
+				padding: 0.75rem 1rem !important;
+				font-size: 1rem !important;
+				border: 2px solid rgb(var(--gray-light)) !important;
+				border-radius: 8px !important;
+				background: rgb(var(--surface)) !important;
+				color: rgb(var(--gray-dark)) !important;
+				transition: border-color 0.2s ease !important;
+				font-family: inherit !important;
+				box-sizing: border-box !important;
+				appearance: none !important;
+				-webkit-appearance: none !important;
+				resize: none !important;
+				line-height: 1.5 !important;
 			}
 			.search-input:focus {
-				outline: none;
-				border-color: rgb(var(--accent));
+				outline: none !important;
+				border-color: rgb(var(--accent)) !important;
+				box-shadow: none !important;
 			}
 			.search-input::placeholder {
-				color: rgb(var(--gray));
+				color: rgb(var(--gray)) !important;
+				opacity: 1 !important;
+			}
+			.search-input:hover {
+				border-color: rgb(var(--gray)) !important;
+			}
+			.search-input:disabled {
+				opacity: 0.6 !important;
+				cursor: not-allowed !important;
 			}
 			.pagefind-ui-container {
 				display: none;
@@ -89,39 +104,101 @@ const postsData = posts.map(post => ({
 			.tag-search-container {
 				display: none;
 			}
-			/* Pagefind UI customization */
+			/* Pagefind UI customization - ensure complete match with tag search */
+			:global(.pagefind-ui),
+			:global(.pagefind-ui__search),
+			:global(.pagefind-ui__search-input-wrapper),
 			:global(.pagefind-ui__search-input),
 			#pagefind-search {
-				width: 100%;
-				padding: 0.75rem 1rem;
-				font-size: 1rem;
-				border: 2px solid rgb(var(--gray-light));
-				border-radius: 8px;
-				background: rgb(var(--surface));
-				color: rgb(var(--gray-dark));
-				transition: border-color 0.2s ease;
+				width: 100% !important;
+				margin: 0 !important;
+				padding: 0 !important;
+				border: none !important;
+				background: transparent !important;
+				box-shadow: none !important;
+			}
+			:global(.pagefind-ui__search-input),
+			#pagefind-search {
+				width: 100% !important;
+				padding: 0.75rem 1rem !important;
+				font-size: 1rem !important;
+				border: 2px solid rgb(var(--gray-light)) !important;
+				border-radius: 8px !important;
+				background: rgb(var(--surface)) !important;
+				color: rgb(var(--gray-dark)) !important;
+				transition: border-color 0.2s ease !important;
+				font-family: inherit !important;
+				box-sizing: border-box !important;
+				appearance: none !important;
+				-webkit-appearance: none !important;
+				resize: none !important;
+				line-height: 1.5 !important;
 			}
 			:global(.pagefind-ui__search-input):focus,
 			#pagefind-search:focus {
-				outline: none;
-				border-color: rgb(var(--accent));
+				outline: none !important;
+				border-color: rgb(var(--accent)) !important;
+				box-shadow: none !important;
 			}
 			:global(.pagefind-ui__search-input)::placeholder,
 			#pagefind-search::placeholder {
-				color: rgb(var(--gray));
+				color: rgb(var(--gray)) !important;
+				opacity: 1 !important;
 			}
-			:global(.pagefind-ui__result) {
-				padding: 1rem;
+			:global(.pagefind-ui__search-input):hover,
+			#pagefind-search:hover {
+				border-color: rgb(var(--gray)) !important;
+			}
+			:global(.pagefind-ui__search-input):disabled,
+			#pagefind-search:disabled {
+				opacity: 0.6 !important;
+				cursor: not-allowed !important;
+			}
+			/* Search results styles */
+			#pagefind-results {
+				margin-top: 1rem;
+				border-radius: 8px;
+				overflow: hidden;
+				background: rgb(var(--surface));
+				border: 1px solid rgb(var(--gray-light));
+			}
+			.pagefind-result {
+				padding: 1rem 1.25rem;
 				border-bottom: 1px solid rgb(var(--gray-light));
+				transition: background-color 0.2s ease;
 			}
-			:global(.pagefind-ui__result-title) {
+			.pagefind-result:last-child {
+				border-bottom: none;
+			}
+			.pagefind-result:hover {
+				background-color: rgba(var(--gray-light), 0.3);
+			}
+			.pagefind-result-title {
+				display: block;
 				color: rgb(var(--accent));
-				font-size: 1.2rem;
+				font-size: 1.1rem;
+				font-weight: 600;
+				text-decoration: none;
+				margin-bottom: 0.5rem;
+				line-height: 1.4;
 			}
-			:global(.pagefind-ui__result-excerpt) {
+			.pagefind-result-title:hover {
+				text-decoration: underline;
+			}
+			.pagefind-result-excerpt {
 				color: rgb(var(--gray-dark));
 				font-size: 0.9rem;
-				margin-top: 0.5rem;
+				line-height: 1.6;
+				margin: 0;
+				word-break: break-word;
+			}
+			/* Highlight style */
+			.pagefind-result-excerpt mark,
+			:global(.pagefind-ui__result-excerpt) mark {
+				background-color: #ffeb3b;
+				color: rgb(var(--black));
+				padding: 0 2px;
+				border-radius: 2px;
 			}
 			ul {
 				display: flex;
@@ -206,7 +283,7 @@ const postsData = posts.map(post => ({
 			<section>
 				<div class="search-container">
 					<div class="search-mode-toggle">
-						<button type="button" class="search-mode-btn active" data-mode="tag">标签搜索</button>
+						<button type="button" class="search-mode-btn active" data-mode="tag">标签标题搜索</button>
 						<button type="button" class="search-mode-btn" data-mode="content">内容搜索</button>
 					</div>
 					
@@ -222,7 +299,16 @@ const postsData = posts.map(post => ({
 					</div>
 					
 					<!-- Content search (Pagefind) -->
-					<div class="pagefind-ui-container" id="pagefind-container"></div>
+					<div class="pagefind-ui-container" id="pagefind-container">
+						<input 
+							type="search" 
+							id="pagefind-search" 
+							class="search-input" 
+							placeholder="输入搜索内容..." 
+							autocomplete="off"
+						/>
+						<div id="pagefind-results"></div>
+					</div>
 				</div>
 				
 				<ul id="posts-list">
@@ -327,22 +413,20 @@ const postsData = posts.map(post => ({
 
 				async function loadPagefind() {
 					try {
-						const pagefind = await import('/_pagefind/pagefind.js');
+						// Try loading from the correct path first
+						let pagefind;
+						try {
+							pagefind = await import('/pagefind/pagefind.js');
+						} catch {
+							pagefind = await import('/_pagefind/pagefind.js');
+						}
 						await pagefind.init();
 						pagefindInstance = pagefind;
 						pagefindLoaded = true;
 						
-						// Create search UI manually
-						const searchInput = document.createElement('input');
-						searchInput.type = 'search';
-						searchInput.className = 'search-input';
-						searchInput.placeholder = '输入搜索内容...';
-						searchInput.id = 'pagefind-search';
-						pagefindContainer.appendChild(searchInput);
-
-						const resultsContainer = document.createElement('div');
-						resultsContainer.id = 'pagefind-results';
-						pagefindContainer.appendChild(resultsContainer);
+						// Use existing search input from HTML
+						const searchInput = document.getElementById('pagefind-search');
+						const resultsContainer = document.getElementById('pagefind-results');
 
 						searchInput.addEventListener('input', async (e) => {
 							const query = e.target.value;
@@ -359,8 +443,52 @@ const postsData = posts.map(post => ({
 							}
 							
 							resultsContainer.innerHTML = data.map(item => {
-								// 限制摘要长度为30个字符
-								const excerpt = item.excerpt ? item.excerpt.slice(0, 30) + '...' : '';
+								// 限制摘要长度为75个字符，让高亮词居中
+								let excerpt = '';
+								if (item.excerpt) {
+									const fullExcerpt = item.excerpt;
+									// 找到高亮标记的位置
+									const highlightStart = fullExcerpt.indexOf('<mark>');
+									const highlightEnd = fullExcerpt.indexOf('</mark>');
+									
+									if (highlightStart !== -1 && highlightEnd !== -1) {
+										// 计算高亮词位置，尝试让它居中
+										const highlightLength = highlightEnd - highlightStart - 6; // 减去 <mark> 标签长度
+										const desiredLength = 75;
+										const halfLength = Math.floor(desiredLength / 2);
+										
+										// 尝试让高亮词在中间位置
+										let startPos = Math.max(0, highlightStart - halfLength);
+										let endPos = startPos + desiredLength;
+										
+										// 如果超出范围，调整
+										if (endPos > fullExcerpt.length) {
+											endPos = fullExcerpt.length;
+											startPos = Math.max(0, endPos - desiredLength);
+										}
+										
+										// 获取截取的摘要
+										excerpt = fullExcerpt.substring(startPos, endPos);
+										
+										// 如果开头不是空格或标点，向前找到合适的分隔点
+										if (startPos > 0 && !/[\s，。！？、；：]/.test(fullExcerpt[startPos - 1])) {
+											const prevSpace = fullExcerpt.lastIndexOf(' ', startPos);
+											if (prevSpace !== -1 && startPos - prevSpace < 20) {
+												excerpt = '...' + fullExcerpt.substring(prevSpace + 1, endPos);
+											} else {
+												excerpt = '...' + excerpt;
+											}
+										}
+										
+										// 如果结尾不是标点，添加省略号
+										if (endPos < fullExcerpt.length && !/[\s，。！？、；：]/.test(fullExcerpt[endPos - 1])) {
+											excerpt += '...';
+										}
+									} else {
+										// 没有高亮标记，直接截取前75个字符
+										excerpt = fullExcerpt.slice(0, 75) + (fullExcerpt.length > 75 ? '...' : '');
+									}
+								}
 								return `
 									<div class="pagefind-result">
 										<a href="${item.url}" class="pagefind-result-title">${item.meta.title}</a>
