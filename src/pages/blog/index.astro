@@ -44,21 +44,23 @@ const postsData = posts.map(post => ({
 			}
 			.search-mode-btn {
 				padding: 0.5rem 1rem;
-				border: 2px solid rgb(var(--gray-light));
+				border: 2px solid rgb(var(--gray));
 				border-radius: 6px;
-				background: rgb(var(--surface));
+				background: transparent;
 				color: rgb(var(--gray-dark));
 				cursor: pointer;
 				font-size: 0.9rem;
+				font-weight: 500;
 				transition: all 0.2s ease;
 			}
 			.search-mode-btn:hover {
 				border-color: rgb(var(--accent));
+				color: rgb(var(--accent));
 			}
 			.search-mode-btn.active {
-				background: rgb(var(--accent));
-				color: white;
-				border-color: rgb(var(--accent));
+				background: #8ea8ff;
+				color: #1a1a2e;
+				border-color: #8ea8ff;
 			}
 			.search-input {
 				width: 100% !important;
