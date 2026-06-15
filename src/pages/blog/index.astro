@@ -91,7 +91,8 @@ const postsData = posts.map(post => ({
 				display: none;
 			}
 			/* Pagefind UI customization */
-			:global(.pagefind-ui__search-input) {
+			:global(.pagefind-ui__search-input),
+			#pagefind-search {
 				width: 100%;
 				padding: 0.75rem 1rem;
 				font-size: 1rem;
@@ -99,6 +100,16 @@ const postsData = posts.map(post => ({
 				border-radius: 8px;
 				background: rgb(var(--surface));
 				color: rgb(var(--gray-dark));
+				transition: border-color 0.2s ease;
+			}
+			:global(.pagefind-ui__search-input):focus,
+			#pagefind-search:focus {
+				outline: none;
+				border-color: rgb(var(--accent));
+			}
+			:global(.pagefind-ui__search-input)::placeholder,
+			#pagefind-search::placeholder {
+				color: rgb(var(--gray));
 			}
 			:global(.pagefind-ui__result) {
 				padding: 1rem;
@@ -348,12 +359,16 @@ const postsData = posts.map(post => ({
 								return;
 							}
 							
-							resultsContainer.innerHTML = data.map(item => `
-								<div class="pagefind-result">
-									<a href="${item.url}" class="pagefind-result-title">${item.meta.title}</a>
-									<p class="pagefind-result-excerpt">${item.excerpt}</p>
-								</div>
-							`).join('');
+							resultsContainer.innerHTML = data.map(item => {
+								// 限制摘要长度为30个字符
+								const excerpt = item.excerpt ? item.excerpt.slice(0, 30) + '...' : '';
+								return `
+									<div class="pagefind-result">
+										<a href="${item.url}" class="pagefind-result-title">${item.meta.title}</a>
+										<p class="pagefind-result-excerpt">${excerpt}</p>
+									</div>
+								`;
+							}).join('');
 						});
 					} catch (e) {
 						console.error('Pagefind load failed:', e);
