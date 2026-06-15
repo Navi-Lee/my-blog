@@ -10,17 +10,108 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+// Prepare posts data for client-side search
+const postsData = posts.map(post => ({
+	id: post.id,
+	title: post.data.title,
+	pubDate: post.data.pubDate.toISOString(),
+	heroImage: post.data.heroImage,
+	description: post.data.description,
+	tags: post.data.tags || [],
+}));
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
 		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<script is:inline src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+		<link href="/_pagefind/pagefind-ui.css" rel="stylesheet">
 		<style>
 			main {
 				width: 100%;
 				max-width: 960px;
 				margin: auto;
+			}
+			.search-container {
+				margin-bottom: 2rem;
+				padding: 1rem;
+			}
+			.search-mode-toggle {
+				display: flex;
+				gap: 0.5rem;
+				margin-bottom: 1rem;
+			}
+			.search-mode-btn {
+				padding: 0.5rem 1rem;
+				border: 2px solid rgb(var(--gray-light));
+				border-radius: 6px;
+				background: rgb(var(--surface));
+				color: rgb(var(--gray-dark));
+				cursor: pointer;
+				font-size: 0.9rem;
+				transition: all 0.2s ease;
+			}
+			.search-mode-btn:hover {
+				border-color: rgb(var(--accent));
+			}
+			.search-mode-btn.active {
+				background: rgb(var(--accent));
+				color: white;
+				border-color: rgb(var(--accent));
+			}
+			.search-input {
+				width: 100%;
+				padding: 0.75rem 1rem;
+				font-size: 1rem;
+				border: 2px solid rgb(var(--gray-light));
+				border-radius: 8px;
+				background: rgb(var(--surface));
+				color: rgb(var(--gray-dark));
+				transition: border-color 0.2s ease;
+			}
+			.search-input:focus {
+				outline: none;
+				border-color: rgb(var(--accent));
+			}
+			.search-input::placeholder {
+				color: rgb(var(--gray));
+			}
+			.pagefind-ui-container {
+				display: none;
+			}
+			.pagefind-ui-container.active {
+				display: block;
+			}
+			.tag-search-container.active {
+				display: block;
+			}
+			.tag-search-container {
+				display: none;
+			}
+			/* Pagefind UI customization */
+			:global(.pagefind-ui__search-input) {
+				width: 100%;
+				padding: 0.75rem 1rem;
+				font-size: 1rem;
+				border: 2px solid rgb(var(--gray-light));
+				border-radius: 8px;
+				background: rgb(var(--surface));
+				color: rgb(var(--gray-dark));
+			}
+			:global(.pagefind-ui__result) {
+				padding: 1rem;
+				border-bottom: 1px solid rgb(var(--gray-light));
+			}
+			:global(.pagefind-ui__result-title) {
+				color: rgb(var(--accent));
+				font-size: 1.2rem;
+			}
+			:global(.pagefind-ui__result-excerpt) {
+				color: rgb(var(--gray-dark));
+				font-size: 0.9rem;
+				margin-top: 0.5rem;
 			}
 			ul {
 				display: flex;
@@ -63,6 +154,25 @@ const posts = (await getCollection('blog')).sort(
 			ul a:hover img {
 				box-shadow: var(--box-shadow);
 			}
+			.no-results {
+				text-align: center;
+				color: rgb(var(--gray));
+				padding: 2rem;
+				width: 100%;
+			}
+			.tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+				margin-top: 0.5rem;
+			}
+			.tag {
+				background: rgb(var(--gray-light));
+				color: rgb(var(--gray-dark));
+				padding: 0.2rem 0.6rem;
+				border-radius: 4px;
+				font-size: 0.75rem;
+			}
 			@media (max-width: 720px) {
 				ul {
 					gap: 0.5em;
@@ -84,10 +194,31 @@ const posts = (await getCollection('blog')).sort(
 		<Header />
 		<main>
 			<section>
-				<ul>
+				<div class="search-container">
+					<div class="search-mode-toggle">
+						<button type="button" class="search-mode-btn active" data-mode="tag">标签搜索</button>
+						<button type="button" class="search-mode-btn" data-mode="content">内容搜索</button>
+					</div>
+					
+					<!-- Tag search -->
+					<div class="tag-search-container active">
+						<input 
+							type="text" 
+							id="tag-search-input" 
+							class="search-input" 
+							placeholder="搜索文章标题或标签..." 
+							autocomplete="off"
+						/>
+					</div>
+					
+					<!-- Content search (Pagefind) -->
+					<div class="pagefind-ui-container" id="pagefind-container"></div>
+				</div>
+				
+				<ul id="posts-list">
 					{
 						posts.map((post) => (
-							<li>
+							<li data-title={post.data.title} data-id={post.id} data-tags={JSON.stringify(post.data.tags || [])}>
 								<a href={`/blog/${post.id}/`}>
 									{post.data.heroImage && (
 										<Image width={720} height={360} src={post.data.heroImage} alt="" />
@@ -96,13 +227,140 @@ const posts = (await getCollection('blog')).sort(
 									<p class="date">
 										<FormattedDate date={post.data.pubDate} />
 									</p>
+									{post.data.tags && post.data.tags.length > 0 && (
+										<div class="tags">
+											{post.data.tags.map((tag) => (
+												<span class="tag">{tag}</span>
+											))}
+										</div>
+									)}
 								</a>
 							</li>
 						))
 					}
 				</ul>
+				<div id="no-results" class="no-results" style="display: none;">
+					没有找到匹配的文章
+				</div>
 			</section>
 		</main>
 		<Footer />
+
+		<script define:vars={{ postsData }}>
+			document.addEventListener('DOMContentLoaded', function() {
+				const tagSearchInput = document.getElementById('tag-search-input');
+				const postsList = document.getElementById('posts-list');
+				const noResults = document.getElementById('no-results');
+				const listItems = postsList.querySelectorAll('li');
+				const tagSearchContainer = document.querySelector('.tag-search-container');
+				const pagefindContainer = document.getElementById('pagefind-container');
+				const modeButtons = document.querySelectorAll('.search-mode-btn');
+
+				let pagefindLoaded = false;
+				let pagefindInstance = null;
+
+				// Initialize Fuse.js for tag search
+				const fuse = new Fuse(postsData, {
+					keys: ['title', 'tags'],
+					threshold: 0.4,
+					ignoreLocation: true,
+				});
+
+				function performTagSearch(query) {
+					if (!query.trim()) {
+						listItems.forEach(item => item.style.display = '');
+						noResults.style.display = 'none';
+						return;
+					}
+
+					const results = fuse.search(query);
+					const matchedIds = new Set(results.map(r => r.item.id));
+
+					listItems.forEach(item => {
+						const id = item.getAttribute('data-id');
+						item.style.display = matchedIds.has(id) ? '' : 'none';
+					});
+
+					noResults.style.display = results.length === 0 ? 'block' : 'none';
+				}
+
+				tagSearchInput.addEventListener('input', (e) => {
+					performTagSearch(e.target.value);
+				});
+
+				// Mode toggle
+				modeButtons.forEach(btn => {
+					btn.addEventListener('click', async () => {
+						const mode = btn.getAttribute('data-mode');
+						
+						modeButtons.forEach(b => b.classList.remove('active'));
+						btn.classList.add('active');
+
+						if (mode === 'tag') {
+							tagSearchContainer.classList.add('active');
+							pagefindContainer.classList.remove('active');
+							listItems.forEach(item => item.style.display = '');
+							noResults.style.display = 'none';
+						} else {
+							tagSearchContainer.classList.remove('active');
+							pagefindContainer.classList.add('active');
+							listItems.forEach(item => item.style.display = 'none');
+							noResults.style.display = 'none';
+							
+							// Load Pagefind on first content search
+							if (!pagefindLoaded) {
+								await loadPagefind();
+							}
+						}
+					});
+				});
+
+				async function loadPagefind() {
+					try {
+						const pagefind = await import('/_pagefind/pagefind.js');
+						await pagefind.init();
+						pagefindInstance = pagefind;
+						pagefindLoaded = true;
+						
+						// Create search UI manually
+						const searchInput = document.createElement('input');
+						searchInput.type = 'search';
+						searchInput.className = 'search-input';
+						searchInput.placeholder = '输入搜索内容...';
+						searchInput.id = 'pagefind-search';
+						pagefindContainer.appendChild(searchInput);
+
+						const resultsContainer = document.createElement('div');
+						resultsContainer.id = 'pagefind-results';
+						pagefindContainer.appendChild(resultsContainer);
+
+						searchInput.addEventListener('input', async (e) => {
+							const query = e.target.value;
+							if (!query.trim()) {
+								resultsContainer.innerHTML = '';
+								return;
+							}
+							const results = await pagefindInstance.search(query);
+							const data = await Promise.all(results.results.slice(0, 10).map(r => r.data()));
+							
+							if (data.length === 0) {
+								resultsContainer.innerHTML = '<p class="no-results">没有找到匹配的内容</p>';
+								return;
+							}
+							
+							resultsContainer.innerHTML = data.map(item => `
+								<div class="pagefind-result">
+									<a href="${item.url}" class="pagefind-result-title">${item.meta.title}</a>
+									<p class="pagefind-result-excerpt">${item.excerpt}</p>
+								</div>
+							`).join('');
+						});
+					} catch (e) {
+						console.error('Pagefind load failed:', e);
+						pagefindContainer.innerHTML = '<p class="no-results">搜索功能暂时不可用</p>';
+					}
+				}
+			});
+		</script>
 	</body>
 </html>
