@@ -16,6 +16,7 @@ const postsData = posts.map(post => ({
 	id: post.id,
 	title: post.data.title,
 	pubDate: post.data.pubDate.toISOString(),
+	latestChangeDate: post.data.latestChangeDate ? post.data.latestChangeDate.toISOString() : null,
 	heroImage: post.data.heroImage,
 	description: post.data.description,
 	tags: post.data.tags || [],
@@ -236,6 +237,13 @@ const postsData = posts.map(post => ({
 				margin: 0;
 				color: rgb(var(--gray));
 			}
+			.pub-date,
+			.update-date {
+				margin: 0;
+			}
+			.update-date {
+				font-size: 0.85em;
+			}
 			ul li a:hover h4,
 			ul li a:hover .date {
 				color: rgb(var(--accent));
@@ -322,9 +330,18 @@ const postsData = posts.map(post => ({
 										<Image width={720} height={360} src={post.data.heroImage} alt="" />
 									)}
 									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
+									<div class="date">
+										<div class="pub-date">
+											<FormattedDate date={post.data.pubDate} />
+										</div>
+										{
+											post.data.latestChangeDate && (
+												<div class="update-date">
+													更新于 <FormattedDate date={post.data.latestChangeDate} />
+												</div>
+											)
+										}
+									</div>
 									{post.data.tags && post.data.tags.length > 0 && (
 										<div class="tags">
 											{post.data.tags.map((tag) => (
