@@ -244,6 +244,16 @@ const postsData = posts.map(post => ({
 			.update-date {
 				font-size: 0.85em;
 			}
+			.description {
+				margin: 0.75rem 0 0.5rem 0;
+				color: rgb(var(--gray-dark));
+				font-size: 0.9em;
+				line-height: 1.5;
+				display: -webkit-box;
+				-webkit-line-clamp: 2;
+				-webkit-box-orient: vertical;
+				overflow: hidden;
+			}
 			ul li a:hover h4,
 			ul li a:hover .date {
 				color: rgb(var(--accent));
@@ -269,6 +279,85 @@ const postsData = posts.map(post => ({
 				padding: 0.2rem 0.6rem;
 				border-radius: 4px;
 				font-size: 0.75rem;
+			}
+			.pagination {
+				display: none;
+				justify-content: center;
+				align-items: center;
+				gap: 0.5rem;
+				margin-top: 2rem;
+				padding: 1rem;
+			}
+			.pagination button {
+				min-width: 36px;
+				height: 36px;
+				padding: 0 0.75rem;
+				border: 2px solid rgb(var(--gray));
+				border-radius: 6px;
+				background: transparent;
+				color: rgb(var(--gray-dark));
+				cursor: pointer;
+				font-size: 0.9rem;
+				font-weight: 500;
+				transition: all 0.2s ease;
+			}
+			.pagination button:hover:not(:disabled) {
+				border-color: rgb(var(--accent));
+				color: rgb(var(--accent));
+			}
+			.pagination button.active {
+				background: rgb(var(--accent));
+				color: white;
+				border-color: rgb(var(--accent));
+			}
+			.pagination button:disabled {
+				opacity: 0.5;
+				cursor: not-allowed;
+			}
+			.page-numbers {
+				display: flex;
+				gap: 0.3rem;
+			}
+			.page-numbers button {
+				min-width: 32px;
+				height: 32px;
+				padding: 0;
+				border: 2px solid rgb(var(--gray));
+				border-radius: 4px;
+				background: transparent;
+				color: rgb(var(--gray-dark));
+				cursor: pointer;
+				font-size: 0.85rem;
+				font-weight: 500;
+				transition: all 0.2s ease;
+			}
+			.page-numbers button:hover {
+				border-color: rgb(var(--accent));
+				color: rgb(var(--accent));
+			}
+			.page-numbers button.active {
+				background: rgb(var(--accent));
+				color: white;
+				border-color: rgb(var(--accent));
+			}
+			.pagination-jump {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+			.pagination-jump input {
+				width: 50px;
+				padding: 0.5rem;
+				border: 2px solid rgb(var(--gray-light));
+				border-radius: 6px;
+				background: rgb(var(--surface));
+				color: rgb(var(--gray-dark));
+				font-size: 0.9rem;
+				text-align: center;
+			}
+			.pagination-jump input:focus {
+				outline: none;
+				border-color: rgb(var(--accent));
 			}
 			@media (max-width: 720px) {
 				ul {
@@ -342,6 +431,7 @@ const postsData = posts.map(post => ({
 											)
 										}
 									</div>
+									<p class="description">{post.data.description}</p>
 									{post.data.tags && post.data.tags.length > 0 && (
 										<div class="tags">
 											{post.data.tags.map((tag) => (
@@ -357,6 +447,16 @@ const postsData = posts.map(post => ({
 				<div id="no-results" class="no-results" style="display: none;">
 					没有找到匹配的文章
 				</div>
+
+				<div id="pagination" class="pagination">
+					<button id="prev-page" disabled>上一页</button>
+					<div id="page-numbers" class="page-numbers"></div>
+					<button id="next-page" disabled>下一页</button>
+					<div class="pagination-jump">
+						<input type="number" id="page-input" min="1" placeholder="页码" />
+						<button id="jump-btn">跳转</button>
+					</div>
+				</div>
 			</section>
 		</main>
 		<Footer />
@@ -370,11 +470,52 @@ const postsData = posts.map(post => ({
 				const tagSearchContainer = document.querySelector('.tag-search-container');
 				const pagefindContainer = document.getElementById('pagefind-container');
 				const modeButtons = document.querySelectorAll('.search-mode-btn');
+				const pagination = document.getElementById('pagination');
+				const prevPageBtn = document.getElementById('prev-page');
+				const nextPageBtn = document.getElementById('next-page');
+				const pageNumbersContainer = document.getElementById('page-numbers');
+				const pageInput = document.getElementById('page-input');
+				const jumpBtn = document.getElementById('jump-btn');
+
+				const PAGE_SIZE = 10;
+				let currentPage = 1;
+				let totalPages = Math.max(1, Math.ceil(listItems.length / PAGE_SIZE));
 
 				let pagefindLoaded = false;
 				let pagefindInstance = null;
 
-				// Initialize Fuse.js for tag search
+				function renderPageNumbers() {
+					pageNumbersContainer.innerHTML = '';
+					for (let i = 1; i <= totalPages; i++) {
+						const btn = document.createElement('button');
+						btn.textContent = i;
+						if (i === currentPage) {
+							btn.classList.add('active');
+						}
+						btn.addEventListener('click', () => showPage(i));
+						pageNumbersContainer.appendChild(btn);
+					}
+				}
+
+				function showPage(pageNum) {
+					currentPage = Math.max(1, Math.min(pageNum, totalPages));
+					const start = (currentPage - 1) * PAGE_SIZE;
+					const end = start + PAGE_SIZE;
+
+					listItems.forEach((item, index) => {
+						item.style.display = (index >= start && index < end) ? 'list-item' : 'none';
+					});
+
+					prevPageBtn.disabled = currentPage === 1;
+					nextPageBtn.disabled = currentPage === totalPages;
+					pageInput.value = '';
+					renderPageNumbers();
+				}
+
+				function showPagination(show) {
+					pagination.style.display = show ? 'flex' : 'none';
+				}
+
 				const fuse = new Fuse(postsData, {
 					keys: ['title', 'tags'],
 					threshold: 0.4,
@@ -383,7 +524,8 @@ const postsData = posts.map(post => ({
 
 				function performTagSearch(query) {
 					if (!query.trim()) {
-						listItems.forEach(item => item.style.display = '');
+						showPagination(true);
+						showPage(1);
 						noResults.style.display = 'none';
 						return;
 					}
@@ -393,9 +535,10 @@ const postsData = posts.map(post => ({
 
 					listItems.forEach(item => {
 						const id = item.getAttribute('data-id');
-						item.style.display = matchedIds.has(id) ? '' : 'none';
+						item.style.display = matchedIds.has(id) ? 'list-item' : 'none';
 					});
 
+					showPagination(false);
 					noResults.style.display = results.length === 0 ? 'block' : 'none';
 				}
 
@@ -403,7 +546,30 @@ const postsData = posts.map(post => ({
 					performTagSearch(e.target.value);
 				});
 
-				// Mode toggle
+				prevPageBtn.addEventListener('click', () => {
+					showPage(currentPage - 1);
+				});
+
+				nextPageBtn.addEventListener('click', () => {
+					showPage(currentPage + 1);
+				});
+
+				jumpBtn.addEventListener('click', () => {
+					const pageNum = parseInt(pageInput.value, 10);
+					if (!isNaN(pageNum)) {
+						showPage(pageNum);
+					}
+				});
+
+				pageInput.addEventListener('keypress', (e) => {
+					if (e.key === 'Enter') {
+						const pageNum = parseInt(pageInput.value, 10);
+						if (!isNaN(pageNum)) {
+							showPage(pageNum);
+						}
+					}
+				});
+
 				modeButtons.forEach(btn => {
 					btn.addEventListener('click', async () => {
 						const mode = btn.getAttribute('data-mode');
@@ -414,15 +580,20 @@ const postsData = posts.map(post => ({
 						if (mode === 'tag') {
 							tagSearchContainer.classList.add('active');
 							pagefindContainer.classList.remove('active');
-							listItems.forEach(item => item.style.display = '');
+							if (!tagSearchInput.value.trim()) {
+								showPagination(true);
+								showPage(1);
+							} else {
+								performTagSearch(tagSearchInput.value);
+							}
 							noResults.style.display = 'none';
 						} else {
 							tagSearchContainer.classList.remove('active');
 							pagefindContainer.classList.add('active');
 							listItems.forEach(item => item.style.display = 'none');
+							showPagination(false);
 							noResults.style.display = 'none';
 							
-							// Load Pagefind on first content search
 							if (!pagefindLoaded) {
 								await loadPagefind();
 							}
@@ -430,9 +601,11 @@ const postsData = posts.map(post => ({
 					});
 				});
 
+				showPagination(true);
+				showPage(1);
+
 				async function loadPagefind() {
 					try {
-						// Try loading from the correct path first
 						let pagefind;
 						try {
 							pagefind = await import('/pagefind/pagefind.js');
@@ -443,7 +616,6 @@ const postsData = posts.map(post => ({
 						pagefindInstance = pagefind;
 						pagefindLoaded = true;
 						
-						// Use existing search input from HTML
 						const searchInput = document.getElementById('pagefind-search');
 						const resultsContainer = document.getElementById('pagefind-results');
 
@@ -462,34 +634,27 @@ const postsData = posts.map(post => ({
 							}
 							
 							resultsContainer.innerHTML = data.map(item => {
-								// 限制摘要长度为75个字符，让高亮词居中
 								let excerpt = '';
 								if (item.excerpt) {
 									const fullExcerpt = item.excerpt;
-									// 找到高亮标记的位置
 									const highlightStart = fullExcerpt.indexOf('<mark>');
 									const highlightEnd = fullExcerpt.indexOf('</mark>');
 									
 									if (highlightStart !== -1 && highlightEnd !== -1) {
-										// 计算高亮词位置，尝试让它居中
-										const highlightLength = highlightEnd - highlightStart - 6; // 减去 <mark> 标签长度
+										const highlightLength = highlightEnd - highlightStart - 6;
 										const desiredLength = 75;
 										const halfLength = Math.floor(desiredLength / 2);
 										
-										// 尝试让高亮词在中间位置
 										let startPos = Math.max(0, highlightStart - halfLength);
 										let endPos = startPos + desiredLength;
 										
-										// 如果超出范围，调整
 										if (endPos > fullExcerpt.length) {
 											endPos = fullExcerpt.length;
 											startPos = Math.max(0, endPos - desiredLength);
 										}
 										
-										// 获取截取的摘要
 										excerpt = fullExcerpt.substring(startPos, endPos);
 										
-										// 如果开头不是空格或标点，向前找到合适的分隔点
 										if (startPos > 0 && !/[\s，。！？、；：]/.test(fullExcerpt[startPos - 1])) {
 											const prevSpace = fullExcerpt.lastIndexOf(' ', startPos);
 											if (prevSpace !== -1 && startPos - prevSpace < 20) {
@@ -499,12 +664,10 @@ const postsData = posts.map(post => ({
 											}
 										}
 										
-										// 如果结尾不是标点，添加省略号
 										if (endPos < fullExcerpt.length && !/[\s，。！？、；：]/.test(fullExcerpt[endPos - 1])) {
 											excerpt += '...';
 										}
 									} else {
-										// 没有高亮标记，直接截取前75个字符
 										excerpt = fullExcerpt.slice(0, 75) + (fullExcerpt.length > 75 ? '...' : '');
 									}
 								}
