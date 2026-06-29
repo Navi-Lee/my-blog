@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00A2FF" /> 
+      <stop offset="100%" stop-color="#007FFF" /> 
+    </linearGradient>
+  </defs>
+  
+  <rect x="0" y="0" width="100" height="100" rx="25" ry="25" fill="url(#iconGradient)"/>
+  
+  <text 
+    x="50%" 
+    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
+    font-weight="900" 
+    letter-spacing="-0.5"
+    text-anchor="middle"
+    fill="#FFFFFF">
+    <tspan x="50%" y="45" font-size="32">Navi</tspan>
+    <tspan x="50%" y="78" font-size="32">Lee</tspan>
+  </text>
+  
+</svg>
