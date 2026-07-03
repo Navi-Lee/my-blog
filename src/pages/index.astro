@@ -32,6 +32,29 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 			.badge-shuang {
 				background-color: #4169e1;
 			}
+			.card {
+				display: flex;
+			}
+			.card-left{
+				flex:1;
+				margin-right: 30px;
+				border-right: 1px solid #ccc;
+				padding-right: 30px;
+			}
+			@media (max-width: 720px) {
+				.card {
+					flex-direction: column;
+				}
+				.card-left{
+					border-right: none;
+					border-bottom: 1px solid #ccc;
+					padding-right: 0;
+				}
+			}
+			.card-right{
+				flex:1;
+				
+			}
 		</style>
 	</head>
 	<body>
@@ -43,17 +66,30 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 				In the bonds of love we meet. ❤️
 			</p>
 			<hr>
-			<p>
-				太原理工大学
-				<span class="badge badge-211">211</span><span class="badge badge-shuang">双一流</span>
-				| 软件工程 | 2029届本科 
-			</p>
+			
+			<div>
+				<span>太原理工大学</span>
+				<span>
+					<span class="badge badge-211">211</span><span class="badge badge-shuang">双一流</span>
+				</span>
+				<span>| 软件工程 </span>
+				<span>| 2029届本科</span>
+			</div>
+
 			<p>
 				欢迎来到我的个人主页。
-			</p><p>
+			</p>
+			
+			<div class="card">
+			<div class="card-left">
+			<p>
 			如果你想看看我的日常随笔与技术博客，请点击上方的Blog。如果你想与我交流，欢迎随时发送邮件至<a href='mailto:LeeNavi@foxmail.com'>LeeNavi@foxmail.com</a>。
 			</p>
-<p>想看过去的我？这里有旧版网站。旧版网站:<a href="https://legacy.navilee.com">Legacy.navilee.com</a></p>
+			</div>
+			<div class='card-right'>
+			<p>想看过去的我？这里有旧版网站。旧版网站:<a href="https://legacy.navilee.com">Legacy.navilee.com</a></p>
+			</div>
+			</div>
 			<p>
 				本网站技术栈为Astro.js,使用Vercel部署。
 			</p>
