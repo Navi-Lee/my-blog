@@ -19,7 +19,8 @@
 	--box-shadow:
 		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
 		0 16px 32px rgba(var(--gray), 33%);
-	--surface: 255, 255, 255;
+	--surface: 253, 252, 248;
+	--page-bg: 246, 244, 238;
 }
 
 html {
@@ -35,6 +36,7 @@ html {
 	--gray-dark: 203, 210, 222;
 	--gray-gradient: rgba(var(--gray-light), 40%), #0b0d10;
 	--surface: 10, 12, 20;
+	--page-bg: 10, 12, 20;
 	--box-shadow: 0 2px 6px rgba(0,0,0,0.5);
 }
 body {
@@ -42,7 +44,7 @@ body {
 	margin: 0;
 	padding: 0;
 	text-align: left;
-	background-color: rgb(var(--surface));
+	background-color: rgb(var(--page-bg));
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: rgb(var(--gray-dark));
@@ -162,7 +164,12 @@ hr {
 	white-space: nowrap;
 }
 
-/* Only apply gradient background for dark theme */
+:root:not([data-theme='dark']) body {
+	background:
+		radial-gradient(circle at top left, rgba(255, 255, 255, 0.82), transparent 34rem),
+		linear-gradient(180deg, #f8f6ef 0%, rgb(var(--page-bg)) 28rem);
+}
+
 :root[data-theme='dark'] body {
 	background: linear-gradient(var(--gray-gradient)) no-repeat;
 	background-size: 100% 600px;
