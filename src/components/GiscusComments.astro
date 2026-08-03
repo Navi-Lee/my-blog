@@ -1,0 +1,70 @@
+<section class="comments" aria-label="评论区">
+	<h2>评论</h2>
+	<p class="comments-note">使用 GitHub 登录后即可参与讨论。</p>
+	<div id="giscus-comments"></div>
+</section>
+
+<style>
+	.comments {
+		width: 720px;
+		max-width: calc(100% - 2em);
+		margin: 2rem auto 0;
+		padding: 1.25rem 1rem 0;
+		border-top: 1px solid rgb(var(--gray-light));
+	}
+
+	.comments h2 {
+		margin-bottom: 0.25rem;
+		font-size: 1.35rem;
+	}
+
+	.comments-note {
+		margin: 0 0 1rem;
+		color: rgb(var(--gray));
+		font-size: 0.92rem;
+	}
+</style>
+
+<script is:inline>
+	(function () {
+		const container = document.getElementById('giscus-comments');
+		if (!container) return;
+
+		function getTheme() {
+			return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark_dimmed' : 'light';
+		}
+
+		const script = document.createElement('script');
+		script.src = 'https://giscus.app/client.js';
+		script.async = true;
+		script.crossOrigin = 'anonymous';
+		script.setAttribute('data-repo', 'Navi-Lee/my-blog');
+		script.setAttribute('data-repo-id', 'R_kgDOS5sXiA');
+		script.setAttribute('data-category', 'Announcements');
+		script.setAttribute('data-category-id', 'DIC_kwDOS5sXiM4DCkrz');
+		script.setAttribute('data-mapping', 'pathname');
+		script.setAttribute('data-strict', '0');
+		script.setAttribute('data-reactions-enabled', '1');
+		script.setAttribute('data-emit-metadata', '0');
+		script.setAttribute('data-input-position', 'top');
+		script.setAttribute('data-theme', getTheme());
+		script.setAttribute('data-lang', 'zh-CN');
+		script.setAttribute('data-loading', 'lazy');
+		container.appendChild(script);
+
+		function syncTheme() {
+			const frame = document.querySelector('iframe.giscus-frame');
+			if (!frame || !frame.contentWindow) return;
+
+			frame.contentWindow.postMessage(
+				{ giscus: { setConfig: { theme: getTheme() } } },
+				'https://giscus.app',
+			);
+		}
+
+		new MutationObserver(syncTheme).observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-theme'],
+		});
+	})();
+</script>
