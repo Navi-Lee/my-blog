@@ -110,21 +110,56 @@ import HeaderLink from './HeaderLink.astro';
 
 	@media (max-width: 720px) {
 		header {
-			text-align: center;
-			padding: 0.75em 1em;
+			padding: 0.5rem max(0.75rem, env(safe-area-inset-left));
 		}
 
 		nav {
-			justify-content: center;
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto;
+			gap: 0.35rem 0.75rem;
+		}
+
+		h2 {
+			grid-column: 1;
+			grid-row: 1;
+			justify-self: start;
+			min-width: 0;
+			font-size: 0.95rem;
 		}
 
 		.internal-links {
-			justify-content: center;
-			white-space: normal;
+			grid-column: 1 / -1;
+			grid-row: 2;
+			width: 100%;
+			min-width: 0;
+			justify-content: flex-start;
+			flex-wrap: nowrap;
+			gap: 0.2rem;
+			overflow-x: auto;
+			overflow-y: hidden;
+			white-space: nowrap;
+			scrollbar-width: none;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		.internal-links::-webkit-scrollbar {
+			display: none;
+		}
+
+		nav a {
+			padding: 0.5rem 0.55rem;
+			border-bottom-width: 3px;
 		}
 
 		.theme-toggle-container {
+			grid-column: 2;
+			grid-row: 1;
 			margin-left: 0;
+		}
+
+		.theme-toggle {
+			width: 36px;
+			height: 36px;
 		}
 
 		.social-links {

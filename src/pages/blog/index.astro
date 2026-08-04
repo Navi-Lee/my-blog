@@ -427,6 +427,17 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 				border-color: rgb(var(--accent));
 			}
 			@media (max-width: 720px) {
+				.search-container {
+					margin-bottom: 1.25rem;
+					padding: 0;
+				}
+				.search-mode-toggle {
+					margin-bottom: 0.75rem;
+				}
+				.search-mode-btn {
+					flex: 1;
+					padding: 0.55rem 0.65rem;
+				}
 				#posts-list {
 					gap: 1rem;
 				}
@@ -437,7 +448,7 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 					border-radius: 16px;
 				}
 				#posts-list li a > :not(img) {
-					margin-inline: 1rem;
+					margin-inline: 0.875rem;
 				}
 				.title {
 					font-size: 1.12rem;
