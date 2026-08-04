@@ -2,13 +2,15 @@
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { SITE_TITLE } from '../consts';
+
+const pageDescription = 'Navi Lee 的社交媒体页面，整理常用平台和公开账号。';
 ---
 
 <!doctype html>
 <html lang="zh-CN">
 	<head>
-		<BaseHead title={`社交媒体 | ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+		<BaseHead title={`社交媒体 | ${SITE_TITLE}`} description={pageDescription} />
 		<style>
 			.social-intro {
 				margin-bottom: 2rem;
