@@ -77,13 +77,13 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 				transition: 0.2s ease;
 			}
 			.category-btn:hover {
-				border-color: rgb(var(--accent));
-				color: rgb(var(--accent));
+				border-color: var(--accent);
+				color: var(--accent);
 			}
 			.category-btn.active {
-				border-color: rgb(var(--accent));
-				background: rgb(var(--accent));
-				color: white;
+				border-color: var(--accent);
+				background: var(--accent);
+				color: rgb(var(--surface));
 			}
 			.search-mode-toggle {
 				display: flex;
@@ -286,7 +286,7 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 				inset: 0;
 				pointer-events: none;
 				border-radius: inherit;
-				background: linear-gradient(135deg, rgba(var(--gray-light), 0.4), transparent 42%);
+				background: none;
 				opacity: 0;
 			}
 			#posts-list li img {
@@ -381,7 +381,11 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 				box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
 			}
 			:root[data-theme='dark'] #posts-list li a::after {
-				background: linear-gradient(135deg, rgba(var(--accent), 0.12), transparent 44%);
+				background: linear-gradient(
+					135deg,
+					color-mix(in srgb, var(--accent) 12%, transparent),
+					transparent 44%
+				);
 			}
 			:root[data-theme='dark'] #posts-list li a:hover {
 				border-color: rgba(var(--accent), 0.5);
