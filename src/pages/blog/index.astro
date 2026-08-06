@@ -20,7 +20,14 @@ const postsData = posts.map(post => ({
 	heroImage: post.data.heroImage,
 	description: post.data.description,
 	tags: post.data.tags || [],
+	classes: post.data.Class,
 }));
+
+const classes = [...new Set(posts.flatMap((post) => post.data.Class))].sort((a, b) => {
+	if (a === '日常随笔') return -1;
+	if (b === '日常随笔') return 1;
+	return a.localeCompare(b, 'zh-CN');
+});
 
 const pageTitle = `Blog | ${SITE_TITLE}`;
 const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学习、技术实践和日常随笔。';
@@ -30,7 +37,10 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 <html lang="zh-CN">
 	<head>
 		<BaseHead title={pageTitle} description={pageDescription} />
-		<script is:inline src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+		<script>
+			import Fuse from 'fuse.js';
+			(window as any).Fuse = Fuse;
+		</script>
 		<style>
 			main {
 				width: 100%;
@@ -40,6 +50,40 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 			.search-container {
 				margin-bottom: 2rem;
 				padding: 1rem;
+			}
+			.category-filter {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 0.6rem;
+				margin-bottom: 1.25rem;
+			}
+			.category-label {
+				margin-right: 0.15rem;
+				color: rgb(var(--gray));
+				font-size: 0.9rem;
+				font-weight: 600;
+			}
+			.category-btn {
+				padding: 0.4rem 0.85rem;
+				border: 1px solid rgba(var(--gray), 0.35);
+				border-radius: 999px;
+				background: rgb(var(--surface));
+				color: rgb(var(--gray-dark));
+				cursor: pointer;
+				font: inherit;
+				font-size: 0.85rem;
+				line-height: 1.4;
+				transition: 0.2s ease;
+			}
+			.category-btn:hover {
+				border-color: rgb(var(--accent));
+				color: rgb(var(--accent));
+			}
+			.category-btn.active {
+				border-color: rgb(var(--accent));
+				background: rgb(var(--accent));
+				color: white;
 			}
 			.search-mode-toggle {
 				display: flex;
@@ -434,6 +478,13 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 				.search-mode-toggle {
 					margin-bottom: 0.75rem;
 				}
+				.category-filter {
+					gap: 0.5rem;
+					margin-bottom: 1rem;
+				}
+				.category-label {
+					width: 100%;
+				}
 				.search-mode-btn {
 					flex: 1;
 					padding: 0.55rem 0.65rem;
@@ -461,6 +512,13 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 		<main>
 			<section>
 				<div class="search-container">
+					<div class="category-filter" aria-label="按分类筛选文章">
+						<span class="category-label">分类</span>
+						<button type="button" class="category-btn active" data-category="全部" aria-pressed="true">全部</button>
+						{classes.map((category) => (
+							<button type="button" class="category-btn" data-category={category} aria-pressed="false">{category}</button>
+						))}
+					</div>
 					<div class="search-mode-toggle">
 						<button type="button" class="search-mode-btn active" data-mode="tag">标签标题搜索</button>
 						<button type="button" class="search-mode-btn" data-mode="content">内容搜索</button>
@@ -493,7 +551,7 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 				<ul id="posts-list">
 					{
 						posts.map((post) => (
-							<li data-title={post.data.title} data-id={post.id} data-tags={JSON.stringify(post.data.tags || [])}>
+							<li data-title={post.data.title} data-id={post.id} data-tags={JSON.stringify(post.data.tags || [])} data-classes={JSON.stringify(post.data.Class)}>
 								<a href={`/blog/${post.id}/`}>
 									{post.data.heroImage && (
 										<Image width={720} height={360} src={post.data.heroImage} alt="" />
@@ -556,10 +614,13 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 				const pageNumbersContainer = document.getElementById('page-numbers');
 				const pageInput = document.getElementById('page-input');
 				const jumpBtn = document.getElementById('jump-btn');
+				const categoryButtons = document.querySelectorAll('.category-btn');
 
 				const PAGE_SIZE = 10;
 				let currentPage = 1;
-				let totalPages = Math.max(1, Math.ceil(listItems.length / PAGE_SIZE));
+				let totalPages = 1;
+				let selectedCategory = '全部';
+				let filteredItems = Array.from(listItems);
 
 				let pagefindLoaded = false;
 				let pagefindInstance = null;
@@ -578,11 +639,15 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 				}
 
 				function showPage(pageNum) {
+					totalPages = Math.max(1, Math.ceil(filteredItems.length / PAGE_SIZE));
 					currentPage = Math.max(1, Math.min(pageNum, totalPages));
 					const start = (currentPage - 1) * PAGE_SIZE;
 					const end = start + PAGE_SIZE;
 
-					listItems.forEach((item, index) => {
+					listItems.forEach((item) => {
+						item.style.display = 'none';
+					});
+					filteredItems.forEach((item, index) => {
 						item.style.display = (index >= start && index < end) ? 'list-item' : 'none';
 					});
 
@@ -602,21 +667,25 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 					ignoreLocation: true,
 				});
 
+				function isInSelectedCategory(post) {
+					return selectedCategory === '全部' || post.classes.includes(selectedCategory);
+				}
+
 				function performTagSearch(query) {
+					const categoryPosts = postsData.filter(isInSelectedCategory);
 					if (!query.trim()) {
+						const allowedIds = new Set(categoryPosts.map(post => post.id));
+						filteredItems = Array.from(listItems).filter(item => allowedIds.has(item.getAttribute('data-id')));
 						showPagination(true);
 						showPage(1);
-						noResults.style.display = 'none';
+						noResults.style.display = filteredItems.length === 0 ? 'block' : 'none';
 						return;
 					}
 
-					const results = fuse.search(query);
+					const results = fuse.search(query).filter(result => isInSelectedCategory(result.item));
 					const matchedIds = new Set(results.map(r => r.item.id));
-
-					listItems.forEach(item => {
-						const id = item.getAttribute('data-id');
-						item.style.display = matchedIds.has(id) ? 'list-item' : 'none';
-					});
+					filteredItems = Array.from(listItems).filter(item => matchedIds.has(item.getAttribute('data-id')));
+					showPage(1);
 
 					showPagination(false);
 					noResults.style.display = results.length === 0 ? 'block' : 'none';
@@ -624,6 +693,23 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 
 				tagSearchInput.addEventListener('input', (e) => {
 					performTagSearch(e.target.value);
+				});
+
+				categoryButtons.forEach(button => {
+					button.addEventListener('click', () => {
+						selectedCategory = button.getAttribute('data-category');
+						categoryButtons.forEach(item => {
+							const active = item === button;
+							item.classList.toggle('active', active);
+							item.setAttribute('aria-pressed', String(active));
+						});
+
+						if (tagSearchContainer.classList.contains('active')) {
+							performTagSearch(tagSearchInput.value);
+						} else {
+							performContentSearch(document.getElementById('pagefind-search').value);
+						}
+					});
 				});
 
 				prevPageBtn.addEventListener('click', () => {
@@ -677,12 +763,61 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 							if (!pagefindLoaded) {
 								await loadPagefind();
 							}
+							if (pagefindLoaded) {
+								performContentSearch(document.getElementById('pagefind-search').value);
+							}
 						}
 					});
 				});
 
-				showPagination(true);
-				showPage(1);
+				performTagSearch('');
+
+				async function performContentSearch(query) {
+					const resultsContainer = document.getElementById('pagefind-results');
+					if (!query.trim()) {
+						resultsContainer.innerHTML = '';
+						return;
+					}
+					if (!pagefindInstance) return;
+
+					const results = await pagefindInstance.search(query);
+					const allData = await Promise.all(results.results.map(result => result.data()));
+					const allowedIds = new Set(postsData.filter(isInSelectedCategory).map(post => post.id));
+					const data = allData.filter(item => {
+						const path = new URL(item.url, window.location.origin).pathname;
+						return Array.from(allowedIds).some(id => path === `/blog/${id}/` || path === `/blog/${id}`);
+					}).slice(0, 10);
+
+					if (data.length === 0) {
+						resultsContainer.innerHTML = '<p class="no-results">没有找到匹配的内容</p>';
+						return;
+					}
+
+					resultsContainer.innerHTML = data.map(item => {
+						let excerpt = '';
+						if (item.excerpt) {
+							const fullExcerpt = item.excerpt;
+							const highlightStart = fullExcerpt.indexOf('<mark>');
+							const highlightEnd = fullExcerpt.indexOf('</mark>');
+							if (highlightStart !== -1 && highlightEnd !== -1) {
+								const desiredLength = 75;
+								const halfLength = Math.floor(desiredLength / 2);
+								let startPos = Math.max(0, highlightStart - halfLength);
+								let endPos = Math.min(fullExcerpt.length, startPos + desiredLength);
+								startPos = Math.max(0, endPos - desiredLength);
+								excerpt = `${startPos > 0 ? '...' : ''}${fullExcerpt.substring(startPos, endPos)}${endPos < fullExcerpt.length ? '...' : ''}`;
+							} else {
+								excerpt = fullExcerpt.slice(0, 75) + (fullExcerpt.length > 75 ? '...' : '');
+							}
+						}
+						return `
+							<div class="pagefind-result">
+								<a href="${item.url}" class="pagefind-result-title">${item.meta.title}</a>
+								<p class="pagefind-result-excerpt">${excerpt}</p>
+							</div>
+						`;
+					}).join('');
+				}
 
 				async function loadPagefind() {
 					try {
@@ -699,66 +834,7 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 						const searchInput = document.getElementById('pagefind-search');
 						const resultsContainer = document.getElementById('pagefind-results');
 
-						searchInput.addEventListener('input', async (e) => {
-							const query = e.target.value;
-							if (!query.trim()) {
-								resultsContainer.innerHTML = '';
-								return;
-							}
-							const results = await pagefindInstance.search(query);
-							const data = await Promise.all(results.results.slice(0, 10).map(r => r.data()));
-							
-							if (data.length === 0) {
-								resultsContainer.innerHTML = '<p class="no-results">没有找到匹配的内容</p>';
-								return;
-							}
-							
-							resultsContainer.innerHTML = data.map(item => {
-								let excerpt = '';
-								if (item.excerpt) {
-									const fullExcerpt = item.excerpt;
-									const highlightStart = fullExcerpt.indexOf('<mark>');
-									const highlightEnd = fullExcerpt.indexOf('</mark>');
-									
-									if (highlightStart !== -1 && highlightEnd !== -1) {
-										const highlightLength = highlightEnd - highlightStart - 6;
-										const desiredLength = 75;
-										const halfLength = Math.floor(desiredLength / 2);
-										
-										let startPos = Math.max(0, highlightStart - halfLength);
-										let endPos = startPos + desiredLength;
-										
-										if (endPos > fullExcerpt.length) {
-											endPos = fullExcerpt.length;
-											startPos = Math.max(0, endPos - desiredLength);
-										}
-										
-										excerpt = fullExcerpt.substring(startPos, endPos);
-										
-										if (startPos > 0 && !/[\s，。！？、；：]/.test(fullExcerpt[startPos - 1])) {
-											const prevSpace = fullExcerpt.lastIndexOf(' ', startPos);
-											if (prevSpace !== -1 && startPos - prevSpace < 20) {
-												excerpt = '...' + fullExcerpt.substring(prevSpace + 1, endPos);
-											} else {
-												excerpt = '...' + excerpt;
-											}
-										}
-										
-										if (endPos < fullExcerpt.length && !/[\s，。！？、；：]/.test(fullExcerpt[endPos - 1])) {
-											excerpt += '...';
-										}
-									} else {
-										excerpt = fullExcerpt.slice(0, 75) + (fullExcerpt.length > 75 ? '...' : '');
-									}
-								}
-								return `
-									<div class="pagefind-result">
-										<a href="${item.url}" class="pagefind-result-title">${item.meta.title}</a>
-										<p class="pagefind-result-excerpt">${excerpt}</p>
-									</div>
-								`;
-							}).join('');
-						});
+						searchInput.addEventListener('input', (event) => performContentSearch(event.target.value));
 					} catch (e) {
 						console.error('Pagefind load failed:', e);
 						pagefindContainer.innerHTML = '<p class="no-results">搜索功能暂时不可用</p>';

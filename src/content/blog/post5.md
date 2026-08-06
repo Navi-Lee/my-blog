@@ -4,6 +4,7 @@ description: ''
 pubDate: 'Jun 26 2026'
 latestChangeDate: 'Jun 26 2026'
 tags: ['计划', '暑假','前端','英语']
+Class: ['日常随笔']
 ---
 每天至少问一个问题。不然钱值不回来。
 

@@ -4,6 +4,7 @@ description: '使用Claude code还是Trae?'
 pubDate: 'July 3 2026'
 latestChangeDate: 'July 3 2026'
 tags: ['Claudecode','Trae']
+Class: ['日常随笔']
 ---
 我没有用过Claude code，只用了Trae。
 

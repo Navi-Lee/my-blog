@@ -3,6 +3,7 @@ title: '第一篇博客'
 description: 'no description'
 pubDate: 'Jun 14 2026'
 tags: ['测试', 'Markdown']
+Class: ['日常随笔']
 ---
 # 这个也是navi Lee写博客的一个测试。
 
