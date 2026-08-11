@@ -11,6 +11,8 @@ const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 
+const defaultCategory = '技术相关';
+
 // Prepare posts data for client-side search
 const postsData = posts.map(post => ({
 	id: post.id,
@@ -518,9 +520,9 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 				<div class="search-container">
 					<div class="category-filter" aria-label="按分类筛选文章">
 						<span class="category-label">分类</span>
-						<button type="button" class="category-btn active" data-category="全部" aria-pressed="true">全部</button>
+						<button type="button" class:list={['category-btn', { active: defaultCategory === '全部' }]} data-category="全部" aria-pressed={defaultCategory === '全部'}>全部</button>
 						{classes.map((category) => (
-							<button type="button" class="category-btn" data-category={category} aria-pressed="false">{category}</button>
+							<button type="button" class:list={['category-btn', { active: category === defaultCategory }]} data-category={category} aria-pressed={category === defaultCategory}>{category}</button>
 						))}
 					</div>
 					<div class="search-mode-toggle">
@@ -603,7 +605,7 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 		</main>
 		<Footer />
 
-		<script define:vars={{ postsData }}>
+		<script define:vars={{ postsData, defaultCategory }}>
 			document.addEventListener('DOMContentLoaded', function() {
 				const tagSearchInput = document.getElementById('tag-search-input');
 				const postsList = document.getElementById('posts-list');
@@ -623,7 +625,7 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 				const PAGE_SIZE = 10;
 				let currentPage = 1;
 				let totalPages = 1;
-				let selectedCategory = '全部';
+				let selectedCategory = defaultCategory;
 				let filteredItems = Array.from(listItems);
 
 				let pagefindLoaded = false;

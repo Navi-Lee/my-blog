@@ -1,10 +1,10 @@
 ---
-title: 'JavaScript手写题'
+title: '数组转树，防抖节流'
 description: ''
 pubDate: 'August 10 2026'
 latestChangeDate: 'August 10 2026'
 tags: ['JS','手写题']
-Class: ['前端算法手写八股']
+Class: ['前端算法手写八股','技术相关']
 ---
 1.数组转树
 
