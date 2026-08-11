@@ -790,7 +790,7 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 					const allData = await Promise.all(results.results.map(result => result.data()));
 					const allowedIds = new Set(postsData.filter(isInSelectedCategory).map(post => post.id));
 					const data = allData.filter(item => {
-						const path = new URL(item.url, window.location.origin).pathname;
+						const path = decodeURIComponent(new URL(item.url, window.location.origin).pathname);
 						return Array.from(allowedIds).some(id => path === `/blog/${id}/` || path === `/blog/${id}`);
 					}).slice(0, 10);
 
