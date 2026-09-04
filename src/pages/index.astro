@@ -106,12 +106,30 @@ const recentPosts = (await getCollection('blog'))
 			.button.primary:hover { color: white; }
 			.profile-card {
 				position: relative;
+				isolation: isolate;
+				overflow: hidden;
 				padding: 1.5rem;
 				border: 1px solid rgb(var(--border));
 				border-top: 3px solid var(--accent);
 				border-radius: var(--radius);
-				background: rgba(var(--surface), 0.82);
+				background:
+					radial-gradient(circle at 100% 0%, rgba(var(--accent-soft), 0.96), transparent 38%),
+					rgba(var(--surface), 0.88);
 				box-shadow: 0 18px 48px rgba(var(--black), 0.08);
+				animation: profile-float 6s ease-in-out infinite;
+			}
+			.profile-card::before {
+				content: '';
+				position: absolute;
+				z-index: -1;
+				width: 9rem;
+				height: 9rem;
+				left: -3.5rem;
+				bottom: -5rem;
+				border-radius: 50%;
+				background: radial-gradient(circle, color-mix(in srgb, var(--accent) 20%, transparent), transparent 68%);
+				filter: blur(3px);
+				animation: profile-glow 7s ease-in-out infinite alternate;
 			}
 			.profile-card::after {
 				content: '';
@@ -123,7 +141,9 @@ const recentPosts = (await getCollection('blog'))
 				border-radius: 50%;
 				background: #42d392;
 				box-shadow: 0 0 0 4px rgba(66, 211, 146, 0.12);
+				animation: status-pulse 2.4s ease-out infinite;
 			}
+			.profile-card > * { position: relative; z-index: 1; }
 			.profile-topline {
 				display: flex;
 				align-items: center;
@@ -140,6 +160,7 @@ const recentPosts = (await getCollection('blog'))
 				text-transform: uppercase;
 			}
 			.profile-status {
+				position: relative;
 				padding: 0.25rem 0.55rem;
 				border: 1px solid rgba(66, 211, 146, 0.35);
 				border-radius: 999px;
@@ -147,6 +168,7 @@ const recentPosts = (await getCollection('blog'))
 				color: #27a86f;
 				font-size: 0.72rem;
 				font-weight: 700;
+				animation: status-breathe 2.6s ease-in-out infinite;
 			}
 			.profile-list { display: grid; gap: 1rem; margin: 0; }
 			.profile-list div {
@@ -156,8 +178,14 @@ const recentPosts = (await getCollection('blog'))
 				align-items: baseline;
 				padding-bottom: 0.75rem;
 				border-bottom: 1px solid rgba(var(--border), 0.75);
+				transition: transform 0.22s ease, background-color 0.22s ease;
+				animation: profile-row-in 0.55s both;
 			}
 			.profile-list div:last-child { border-bottom: 0; padding-bottom: 0; }
+			.profile-list div:nth-child(2) { animation-delay: 0.08s; }
+			.profile-list div:nth-child(3) { animation-delay: 0.16s; }
+			.profile-list div:nth-child(4) { animation-delay: 0.24s; }
+			.profile-list div:hover { transform: translateX(5px); }
 			.profile-list dt { color: rgb(var(--gray)); font-size: 0.8rem; }
 			.profile-list dd {
 				margin: 0;
@@ -177,10 +205,46 @@ const recentPosts = (await getCollection('blog'))
 				color: rgb(var(--gray-dark));
 				font-size: 0.72rem;
 				font-weight: 700;
+				transition: transform 0.2s ease, box-shadow 0.2s ease;
+				animation: badge-drift 5s ease-in-out infinite;
 			}
-			.badge-211 { border-color: #ef5da8; background: rgba(239, 93, 168, 0.14); color: #d83e8d; }
-			.badge-dual { border-color: #4d7cff; background: rgba(77, 124, 255, 0.14); color: #4d7cff; }
-			.badge-ai { background: rgba(var(--accent-soft), 0.7); color: var(--accent); }
+			.badge:hover { transform: translateY(-3px) rotate(-1deg); box-shadow: 0 8px 15px rgba(var(--black), 0.1); }
+			.badge-211 { border-color: #ef5da8; background: rgba(239, 93, 168, 0.14); color: #d83e8d; animation-delay: -1.4s; }
+			.badge-dual { border-color: #4d7cff; background: rgba(77, 124, 255, 0.14); color: #4d7cff; animation-delay: -2.8s; }
+			.badge-ai { background: rgba(var(--accent-soft), 0.7); color: var(--accent); animation-delay: -4.1s; }
+			@keyframes profile-float {
+				0%, 100% { transform: translateY(0); }
+				50% { transform: translateY(-5px); }
+			}
+			@keyframes profile-glow {
+				from { transform: translate(0, 0) scale(0.9); opacity: 0.55; }
+				to { transform: translate(2rem, -1rem) scale(1.2); opacity: 0.95; }
+			}
+			@keyframes status-pulse {
+				0%, 55% { box-shadow: 0 0 0 4px rgba(66, 211, 146, 0.12); }
+				70% { box-shadow: 0 0 0 9px rgba(66, 211, 146, 0); }
+				100% { box-shadow: 0 0 0 4px rgba(66, 211, 146, 0); }
+			}
+			@keyframes status-breathe {
+				0%, 100% { transform: scale(1); }
+				50% { transform: scale(1.04); }
+			}
+			@keyframes profile-row-in {
+				from { opacity: 0; transform: translateX(-8px); }
+				to { opacity: 1; transform: translateX(0); }
+			}
+			@keyframes badge-drift {
+				0%, 100% { transform: translateY(0); }
+				50% { transform: translateY(-2px); }
+			}
+			@media (prefers-reduced-motion: reduce) {
+				.profile-card,
+				.profile-card::before,
+				.profile-card::after,
+				.profile-status,
+				.profile-list div,
+				.badge { animation: none; }
+			}
 			.latest {
 				padding-top: clamp(2.5rem, 6vw, 4.5rem);
 				border-top: 1px solid rgb(var(--border));
