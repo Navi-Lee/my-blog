@@ -1,6 +1,6 @@
 ---
 title: '数组转树，防抖节流'
-description: ''
+description: 'JavaScript 常见手写题笔记：数组转树、防抖与节流。'
 pubDate: 'August 10 2026'
 latestChangeDate: 'August 10 2026'
 tags: ['JS','手写题']
@@ -102,3 +102,63 @@ console.log(tree);
 
 // 不依赖元素顺序，结构更健壮。
 ```
+
+2.防抖节流：
+
+```javascript
+function debounce(fn,delay){
+  let timer=null
+  const debounceFunc=function(...arg){
+    if(timer){
+      clearTimeout(timer)
+    }
+    timer=setTimeout(()=>{
+      fn.apply(this,arg)
+    //apply语法：fn.apply(thisArg, argsArray)
+    //...arg是数组，而这里正需要传入数组。
+    //fn.call与fn.apply一样，只不过第二个参数不用数组了
+    },delay)
+  }
+  return debounceFunc
+}
+
+// v2
+function debounce(fn, delay, immediate = false){
+  //immediate=false意思是如果不传入true，那么默认他就是false
+  let timer=null
+  let hasInvoked=false//has invoked 这一轮已经调用过了
+  const debounceFunc = function(...args){
+    //args意思是arguments，参数，但是不要写arguments，因为他是一个内置的东西
+    if(timer)clearTimeout(timer)
+    if(immediate&&!hasInvoked){
+      fn.call(this,...args)
+      hasInvoked=true
+    }
+    else{
+      timer=setTimeout(()=>{
+        fn.call(this,...args)
+        hasInvoked=false
+      },delay)
+    }
+  }
+  return debounceFunc
+}
+
+// 使用时间戳的节流函数会在第一次触发事件时立即执行，
+// 以后每过 wait 秒之后才执行一次，并且最后一次触发事件不会被执行
+function throttle(fn, delay) {
+  let last = 0
+  const _throttle = function(...args) {
+    const now = new Date().getTime()
+    if(now - last >= delay) {
+      fn.apply(this, args)
+      last = now
+    }
+  }
+  return _throttle
+}
+
+
+export default MyComponent;
+```
+直接调用debounce用useCallback解决别的state问题 useref解决

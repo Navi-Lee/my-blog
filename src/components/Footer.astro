@@ -3,7 +3,11 @@ const today = new Date();
 ---
 
 <footer>
-	&copy; {today.getFullYear()} Navi Lee. All rights reserved.
+	<div class="footer-inner">
+		<div class="footer-copy">
+			<strong>Navi Lee</strong>
+			<span>&copy; {today.getFullYear()} · 写代码，也写生活。</span>
+		</div>
 	<div class="social-links">
 		
 		<a href="https://github.com/navi-lee" target="_blank">
@@ -16,19 +20,37 @@ const today = new Date();
 			>
 		</a>
 	</div>
+	</div>
 </footer>
 <style>
 	footer {
-		padding: 2em 1em 6em 1em;
-		background: linear-gradient(var(--gray-gradient)) no-repeat;
+		padding: 2.25rem 1rem 3rem;
+		border-top: 1px solid rgb(var(--border));
+		background: rgba(var(--surface), 0.48);
 		color: rgb(var(--gray));
-		text-align: center;
+	}
+	.footer-inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		max-width: 1120px;
+		margin: 0 auto;
+	}
+	.footer-copy {
+		display: grid;
+		gap: 0.15rem;
+	}
+	footer strong {
+		color: rgb(var(--black));
+		font-size: 0.95rem;
+	}
+	footer span {
+		font-size: 0.82rem;
 	}
 	.social-links {
 		display: flex;
-		justify-content: center;
+		align-items: center;
 		gap: 1em;
-		margin-top: 1em;
 	}
 	.social-links a {
 		text-decoration: none;
@@ -36,5 +58,11 @@ const today = new Date();
 	}
 	.social-links a:hover {
 		color: rgb(var(--gray-dark));
+	}
+	@media (max-width: 520px) {
+		.social-links svg {
+			width: 26px;
+			height: 26px;
+		}
 	}
 </style>

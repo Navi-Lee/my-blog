@@ -65,27 +65,55 @@ const articleJsonLd = {
 				box-shadow: var(--box-shadow);
 			}
 			.prose {
-				width: 720px;
+				width: 760px;
 				max-width: calc(100% - 2em);
 				margin: auto;
-				padding: 1em;
+				padding: clamp(2.5rem, 6vw, 5rem) 1em 2rem;
 				color: rgb(var(--gray-dark));
 			}
 			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
+				margin-bottom: 2.5rem;
+				padding: 0;
+				text-align: left;
 				line-height: 1;
 			}
 			.title h1 {
-				margin: 0 0 0.5em 0;
+				margin: 0 0 1.25rem;
+				font-size: clamp(2.6rem, 7vw, 5rem);
+				line-height: 1.04;
+				letter-spacing: -0.055em;
 			}
 			.date {
-				margin-bottom: 0.5em;
+				display: flex;
+				gap: 0.55rem;
+				align-items: center;
+				margin-bottom: 1rem;
 				color: rgb(var(--gray));
+				font-size: 0.82rem;
+				font-weight: 700;
+				letter-spacing: 0.03em;
+			}
+			.date::before {
+				content: 'Published';
+				color: var(--accent);
+				text-transform: uppercase;
 			}
 			.last-updated-on {
 				font-style: italic;
+			}
+			.title hr {
+				width: 3.5rem;
+				margin: 0;
+				border-top: 3px solid var(--accent);
+			}
+			.prose :global(h2) {
+				margin-top: 2.5rem;
+				font-size: 1.75rem;
+				letter-spacing: -0.025em;
+			}
+			.prose :global(h3) {
+				margin-top: 2rem;
+				font-size: 1.35rem;
 			}
 			@media (max-width: 720px) {
 				main {
@@ -97,15 +125,19 @@ const articleJsonLd = {
 				.prose {
 					width: 100%;
 					max-width: 100%;
-					padding: 1.25rem 0.875rem 0;
+					padding: 2rem 0.875rem 0;
 				}
 				.title {
-					margin-bottom: 0.75rem;
-					padding: 0.5rem 0;
+					margin-bottom: 2rem;
+					padding: 0;
 				}
 				.title h1 {
-					font-size: clamp(1.9rem, 9vw, 2.35rem);
-					line-height: 1.12;
+					font-size: clamp(2.25rem, 11vw, 3.35rem);
+					line-height: 1.08;
+				}
+				.date {
+					flex-wrap: wrap;
+					gap: 0.35rem 0.55rem;
 				}
 			}
 		</style>
