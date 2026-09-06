@@ -106,3 +106,25 @@ function deepCopy(obj){//输入的不一定是个对象
   return newObj
 }
 ```
+- instanceof
+用法：
+```js
+function Person() {}
+const p = new Person()
+p instanceof Person // true
+```
+代码：
+```js
+function myInstanceOf(left,right){
+  const prototype = right.prototype
+  let proto = Object.getPrototypeOf(left)//也就是获得left.__proto__（left所继承的原型）
+  while(true){
+  if(proto===null)return false
+  if(proto===prototype)return true //两者相等，left就是right的实例
+  proto=Object.getPrototypeOf(proto) //这个是object内置对象上面的方法
+
+  }
+  
+}
+```
+
