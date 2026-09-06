@@ -33,12 +33,29 @@ const classes = [...new Set(posts.flatMap((post) => post.data.Class))].sort((a, 
 
 const pageTitle = `Blog | ${SITE_TITLE}`;
 const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学习、技术实践和日常随笔。';
+const blogListJsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'CollectionPage',
+	name: pageTitle,
+	description: pageDescription,
+	url: new URL('/blog/', Astro.site).toString(),
+	mainEntity: {
+		'@type': 'ItemList',
+		itemListElement: posts.map((post, index) => ({
+			'@type': 'ListItem',
+			position: index + 1,
+			url: new URL(`/blog/${post.id}/`, Astro.site).toString(),
+			name: post.data.title,
+		})),
+	},
+};
 ---
 
 <!doctype html>
 <html lang="zh-CN">
 	<head>
 		<BaseHead title={pageTitle} description={pageDescription} />
+		<script type="application/ld+json" set:html={JSON.stringify(blogListJsonLd)} />
 		<script>
 			import Fuse from 'fuse.js';
 			(window as any).Fuse = Fuse;
@@ -602,7 +619,7 @@ const pageDescription = 'Navi Lee 的博客文章列表，包含软件工程学�
 							<li data-title={post.data.title} data-id={post.id} data-tags={JSON.stringify(post.data.tags || [])} data-classes={JSON.stringify(post.data.Class)}>
 								<a href={`/blog/${post.id}/`}>
 									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
+										<Image width={720} height={360} src={post.data.heroImage} alt={`${post.data.title} 封面图`} />
 									)}
 									<h4 class="title">{post.data.title}</h4>
 									<div class="date">

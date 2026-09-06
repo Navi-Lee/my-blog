@@ -1,6 +1,6 @@
 ---
 title: '暑假学习前端以及英语的计划'
-description: ''
+description: '暑期前端与英语学习计划，涵盖 Redux Toolkit、算法题、手写题、项目实践、简历和雅思词汇。'
 pubDate: 'Jun 26 2026'
 latestChangeDate: 'Jun 26 2026'
 tags: ['计划', '暑假','前端','英语']

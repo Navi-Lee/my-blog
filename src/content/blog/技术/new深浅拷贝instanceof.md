@@ -1,6 +1,6 @@
 ---
 title: 'new深浅拷贝instanceof'
-description: ''
+description: 'JavaScript 手写题笔记：实现 new、浅拷贝与深拷贝，以及 instanceof 的原型链判断原理。'
 pubDate: 'September 4 2026'
 tags: ['JS','手写题']
 Class: ['前端算法手写八股','技术相关']

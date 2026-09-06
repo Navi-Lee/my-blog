@@ -48,6 +48,10 @@ body {
 	font-family: var(--font-atkinson);
 	margin: 0;
 	padding: 0;
+	min-height: 100vh;
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
 	text-align: left;
 	background-color: rgb(var(--page-bg));
 	word-wrap: break-word;
@@ -58,6 +62,7 @@ body {
 	overflow-x: hidden;
 }
 main {
+	flex: 1 0 auto;
 	width: 100%;
 	max-width: 720px;
 	margin: auto;

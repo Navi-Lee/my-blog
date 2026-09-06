@@ -1,6 +1,6 @@
 ---
 title: 'useState Ref Memo CallBack'
-description: ''
+description: '梳理 React useState、useRef、useMemo 和 useCallback 的区别、使用方式与依赖数组注意事项。'
 pubDate: 'August 21 2026'
 latestChangeDate: 'August 21 2026'
 tags: ['JS']

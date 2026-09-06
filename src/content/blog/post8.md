@@ -1,6 +1,6 @@
 ---
 title: '雅思词汇真经背100页有感'
-description: ''
+description: '背完《雅思词汇真经》前 100 页后的学习感受，包括生词复现、发音纠正、复习节奏与暑期目标。'
 pubDate: 'August 3 2026'
 latestChangeDate: 'August 3 2026'
 tags: ['雅思','英语','单词']

@@ -1,6 +1,6 @@
 ---
 title: '第一篇博客'
-description: 'no description'
+description: '一篇 Markdown 博客写作测试，演示标题、列表、代码块、引用、表格、公式和链接等常用语法。'
 pubDate: 'Jun 14 2026'
 tags: ['测试', 'Markdown']
 Class: ['日常随笔']

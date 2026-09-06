@@ -29,18 +29,6 @@ const recentPosts = (await getCollection('blog'))
 				align-items: end;
 				padding-bottom: clamp(3rem, 7vw, 5.5rem);
 			}
-			.hero::before {
-				content: '';
-				position: absolute;
-				top: -2.5rem;
-				right: 4%;
-				width: 11rem;
-				height: 11rem;
-				border-radius: 999px;
-				background: radial-gradient(circle, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%);
-				filter: blur(8px);
-				pointer-events: none;
-			}
 			.eyebrow,
 			.section-kicker {
 				display: inline-flex;

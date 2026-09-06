@@ -1,6 +1,6 @@
 ---
 title: '学英语的一点计划'
-description: ''
+description: '记录暑期英语学习计划：从《雅思词汇真经》入手，提高词汇量与英语实际应用能力。'
 pubDate: 'Jun 16 2026'
 latestChangeDate: 'Jun 17 2026'
 tags: ['英语', '雅思','四六级']
