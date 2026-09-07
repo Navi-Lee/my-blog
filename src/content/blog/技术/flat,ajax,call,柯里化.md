@@ -1,5 +1,5 @@
 ---
-title: 'flat ajax call 柯里化'
+title: 'flat ajax call 柯里化 千分位逗号隔开'
 description: 'JavaScript 常见手写题笔记：数组与对象扁平化、Ajax、call 实现和函数柯里化。'
 pubDate: 'September 6 2026'
 tags: ['JS','手写题']
@@ -198,3 +198,21 @@ const curry2=(fn)=>{
 }
 ```
 
+- 千分位逗号隔开
+  ```js
+  const thousandSeperater = (n) => {
+  n=n.toString()
+  let res =[]
+  let count=1
+  for(let i=n.length-1;i>=0;i--){
+    if(count<4){
+      res.push(n[i])
+      count++
+    }else{
+      res.push(',',n[i])
+      count=1
+    }
+  }
+  return res.reverse().join('')
+  }  
+  ```
