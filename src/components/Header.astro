@@ -15,7 +15,15 @@ import HeaderLink from './HeaderLink.astro';
 		</div>
 
 		<div class="theme-toggle-container">
-			<button id="theme-toggle" class="theme-toggle" aria-label="切换主题" title="切换主题" aria-pressed="false">🌙</button>
+			<button id="theme-toggle" class="theme-toggle" type="button" aria-label="切换主题" title="切换主题" aria-pressed="false">
+				<svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" aria-hidden="true">
+					<path d="M20.4 15.2A8.5 8.5 0 0 1 8.8 3.6 8.5 8.5 0 1 0 20.4 15.2Z"></path>
+				</svg>
+				<svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" aria-hidden="true">
+					<circle cx="12" cy="12" r="3.5"></circle>
+					<path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.65 17.65l1.42 1.42M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.65 6.35l1.42-1.42"></path>
+				</svg>
+			</button>
 		</div>
 
 		<div class="social-links">
@@ -115,8 +123,26 @@ import HeaderLink from './HeaderLink.astro';
 		border: 1px solid rgba(var(--border), 0.9);
 		background: rgba(var(--surface), 0.75);
 		color: rgb(var(--black));
-		font-size: 15px;
 		cursor: pointer;
+	}
+
+	.theme-icon {
+		width: 19px;
+		height: 19px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.8;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.theme-icon--sun,
+	:root[data-theme='dark'] .theme-icon--moon {
+		display: none;
+	}
+
+	:root[data-theme='dark'] .theme-icon--sun {
+		display: block;
 	}
 
 	.theme-toggle:focus {
@@ -208,7 +234,6 @@ import HeaderLink from './HeaderLink.astro';
 
 			const btn = document.getElementById(toggleId);
 			if (btn) {
-				btn.textContent = theme === 'dark' ? '☀' : '🌙';
 				btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
 			}
 		}

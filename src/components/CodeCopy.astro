@@ -96,16 +96,33 @@
 	.prose .code-block {
 		position: relative;
 		min-width: 0;
-		margin: 1em 0;
+		margin: 1.3rem 0 1.6rem;
 		padding-top: 3rem;
 		border: 1px solid rgb(var(--border));
 		border-radius: 14px;
 		background: rgb(var(--surface));
+		box-shadow: 0 14px 34px rgba(var(--black), 0.08);
+		overflow: hidden;
+	}
+	.prose .code-block::before {
+		content: '';
+		position: absolute;
+		top: 1.35rem;
+		left: 1.15rem;
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: #ff5f57;
+		box-shadow: 13px 0 #febc2e, 26px 0 #28c840;
 	}
 	.prose .code-block > pre {
 		margin: 0;
 		border: 0;
 		border-radius: 0 0 13px 13px;
+		font-family: var(--font-code);
+		font-size: 0.88rem;
+		line-height: 1.7;
+		tab-size: 2;
 	}
 	.prose .code-copy {
 		position: absolute;

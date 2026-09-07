@@ -153,3 +153,48 @@ say.myCall(obj, 18)
 //myCall 里的 this → say
 //say 里的 this → thisArg
 ```
+
+- 柯里化
+
+把一个“要一次传很多参数的函数”，变成“可以分多次传参数”的函数
+
+比如可以：
+
+```js
+function add(a, b, c) {
+  return a + b + c
+}
+
+add(1, 2, 3) // 6
+curry(add)(1)(2)(3) // 6，柯里化调用
+curry(add)(1, 2)(3) // 这样也行
+```
+
+两种写法
+
+```js
+const curry =(fn,...args)=>{
+  //...args有两种用法，上方是收集参数为数组args
+  if(args.length>=fn.length){
+    //下面这种是从args数组展开
+    return fn(...args)
+  }
+  //参数不够则继续收参数
+  return (...rest)=>{
+    return curry(fn,...args,...rest)
+  }
+}
+
+//另一种写法
+const curry2=(fn)=>{
+  return function curried(...args){
+    if(fn.length<=args.length){
+      return fn(...args)
+    }
+    return(...rest)=>{
+      return curried(...args,...rest)
+    }
+  }
+}
+```
+
