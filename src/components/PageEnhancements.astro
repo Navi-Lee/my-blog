@@ -1,0 +1,89 @@
+---
+// Lightweight, progressively enhanced page utilities shared by every route.
+---
+
+<div class="reading-progress" aria-hidden="true"><span></span></div>
+<button class="back-to-top" type="button" aria-label="回到页面顶部" title="回到顶部">
+	<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 14 6-6 6 6M12 8v12" /></svg>
+</button>
+
+<style>
+	.reading-progress {
+		position: fixed;
+		top: 0;
+		left: 0;
+		z-index: 50;
+		width: 100%;
+		height: 3px;
+		pointer-events: none;
+		background: color-mix(in srgb, var(--accent) 8%, transparent);
+	}
+	.reading-progress span {
+		display: block;
+		width: var(--scroll-progress, 0%);
+		height: 100%;
+		border-radius: 0 999px 999px 0;
+		background: linear-gradient(90deg, var(--accent), #8c6dff);
+		box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 55%, transparent);
+		transition: width 0.08s linear;
+	}
+	.back-to-top {
+		position: fixed;
+		right: clamp(1rem, 3vw, 2rem);
+		bottom: clamp(1rem, 3vw, 2rem);
+		z-index: 30;
+		display: grid;
+		width: 44px;
+		height: 44px;
+		place-items: center;
+		border: 1px solid rgb(var(--border));
+		border-radius: 14px;
+		background: rgba(var(--surface), 0.82);
+		box-shadow: 0 12px 30px rgba(var(--black), 0.14);
+		color: var(--accent);
+		cursor: pointer;
+		opacity: 0;
+		transform: translateY(12px) scale(0.92);
+		pointer-events: none;
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+	}
+	.back-to-top.is-visible {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+		pointer-events: auto;
+	}
+	.back-to-top:hover { border-color: var(--accent); transform: translateY(-3px); }
+	.back-to-top svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2; }
+	@media (prefers-reduced-motion: reduce) {
+		.reading-progress span, .back-to-top { transition: none; }
+		.back-to-top:hover { transform: none; }
+	}
+</style>
+
+<script>
+	const root = document.documentElement;
+	const backToTop = document.querySelector<HTMLButtonElement>('.back-to-top');
+	let ticking = false;
+
+	function updatePageUtilities() {
+		const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+		const progress = scrollable > 0 ? Math.min(100, (window.scrollY / scrollable) * 100) : 0;
+		root.style.setProperty('--scroll-progress', `${progress}%`);
+		backToTop?.classList.toggle('is-visible', window.scrollY > 420);
+		ticking = false;
+	}
+
+	function requestUpdate() {
+		if (!ticking) {
+			window.requestAnimationFrame(updatePageUtilities);
+			ticking = true;
+		}
+	}
+
+	window.addEventListener('scroll', requestUpdate, { passive: true });
+	window.addEventListener('resize', requestUpdate);
+	backToTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+	updatePageUtilities();
+</script>

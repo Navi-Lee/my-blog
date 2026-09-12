@@ -122,6 +122,27 @@ const breadcrumbJsonLd = {
 				font-size: 1rem;
 				line-height: 1.62;
 			}
+			.reading-note {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.5rem;
+				margin: 0 0 1.25rem;
+				padding: 0.36rem 0.7rem;
+				border: 1px solid color-mix(in srgb, var(--accent) 18%, rgb(var(--border)));
+				border-radius: 999px;
+				background: rgba(var(--accent-soft), 0.38);
+				color: rgb(var(--gray));
+				font-size: 0.76rem;
+				font-weight: 700;
+				letter-spacing: 0.01em;
+			}
+			.reading-note span {
+				width: 7px;
+				height: 7px;
+				border-radius: 50%;
+				background: var(--accent);
+				box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent);
+			}
 			.date {
 				display: flex;
 				gap: 0.55rem;
@@ -313,6 +334,7 @@ const breadcrumbJsonLd = {
 						</div>
 						<h1>{title}</h1>
 						<p class="title-description">{description}</p>
+						<div class="reading-note" aria-label="阅读提示"><span></span>向下滚动可查看阅读进度</div>
 						<hr />
 					</div>
 					<div class="article-content">
