@@ -10,7 +10,9 @@
     "dev": "astro dev",
     "build": "astro build && pagefind --site dist --force-language zh",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@astrojs/mdx": "^6.0.3",
@@ -20,5 +22,8 @@
     "fuse.js": "^7.4.2",
     "pagefind": "^1.5.2",
     "sharp": "^0.34.3"
+  },
+  "devDependencies": {
+    "prettier": "3.9.6"
   }
 }

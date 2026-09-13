@@ -5,69 +5,69 @@
  */
 
 * {
-	box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 :root {
-	--font-code: Consolas, 'Cascadia Code', 'Courier New', monospace;
-	--accent: #315efb;
-	--accent-dark: #1d3ecf;
-	--accent-soft: 228, 235, 255;
-	--black: 15, 18, 25;
-	--gray: 92, 105, 128;
-	--gray-light: 226, 231, 240;
-	--gray-dark: 41, 50, 66;
-	--gray-gradient: rgba(var(--gray-light), 50%), #fff;
-	--box-shadow:
-		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
-		0 16px 32px rgba(var(--gray), 33%);
-	--surface: 255, 255, 255;
-	--page-bg: 246, 248, 252;
-	--border: 220, 226, 236;
-	--radius: 20px;
+  --font-code: Consolas, "Cascadia Code", "Courier New", monospace;
+  --accent: #315efb;
+  --accent-dark: #1d3ecf;
+  --accent-soft: 228, 235, 255;
+  --black: 15, 18, 25;
+  --gray: 92, 105, 128;
+  --gray-light: 226, 231, 240;
+  --gray-dark: 41, 50, 66;
+  --gray-gradient: rgba(var(--gray-light), 50%), #fff;
+  --box-shadow:
+    0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
+    0 16px 32px rgba(var(--gray), 33%);
+  --surface: 255, 255, 255;
+  --page-bg: 246, 248, 252;
+  --border: 220, 226, 236;
+  --radius: 20px;
 }
 
 html {
-	overflow-x: hidden;
+  overflow-x: hidden;
 }
 
-:root[data-theme='dark'] {
-	--accent: #8ea8ff;
-	--accent-dark: #5e79ff;
-	--accent-soft: 29, 43, 82;
-	--black: 236, 240, 246;
-	--gray: 120, 130, 150;
-	--gray-light: 34, 41, 57;
-	--gray-dark: 203, 210, 222;
-	--gray-gradient: rgba(var(--gray-light), 40%), #0b0d10;
-	--surface: 15, 19, 30;
-	--page-bg: 9, 12, 19;
-	--border: 38, 46, 64;
-	--box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+:root[data-theme="dark"] {
+  --accent: #8ea8ff;
+  --accent-dark: #5e79ff;
+  --accent-soft: 29, 43, 82;
+  --black: 236, 240, 246;
+  --gray: 120, 130, 150;
+  --gray-light: 34, 41, 57;
+  --gray-dark: 203, 210, 222;
+  --gray-gradient: rgba(var(--gray-light), 40%), #0b0d10;
+  --surface: 15, 19, 30;
+  --page-bg: 9, 12, 19;
+  --border: 38, 46, 64;
+  --box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 body {
-	font-family: var(--font-atkinson);
-	margin: 0;
-	padding: 0;
-	min-height: 100vh;
-	min-height: 100dvh;
-	display: flex;
-	flex-direction: column;
-	text-align: left;
-	background-color: rgb(var(--page-bg));
-	word-wrap: break-word;
-	overflow-wrap: break-word;
-	color: rgb(var(--gray-dark));
-	font-size: 19px;
-	line-height: 1.68;
-	overflow-x: hidden;
+  font-family: var(--font-atkinson);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  background-color: rgb(var(--page-bg));
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  color: rgb(var(--gray-dark));
+  font-size: 19px;
+  line-height: 1.68;
+  overflow-x: hidden;
 }
 main {
-	flex: 1 0 auto;
-	width: 100%;
-	max-width: 720px;
-	margin: auto;
-	padding: 3em 1em;
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 720px;
+  margin: auto;
+  padding: 3em 1em;
 }
 h1,
 h2,
@@ -75,151 +75,159 @@ h3,
 h4,
 h5,
 h6 {
-	margin: 0 0 0.5rem 0;
-	color: rgb(var(--black));
-	line-height: 1.2;
+  margin: 0 0 0.5rem 0;
+  color: rgb(var(--black));
+  line-height: 1.2;
 }
 h1 {
-	font-size: 3.052em;
+  font-size: 3.052em;
 }
 h2 {
-	font-size: 2.441em;
+  font-size: 2.441em;
 }
 h3 {
-	font-size: 1.953em;
+  font-size: 1.953em;
 }
 h4 {
-	font-size: 1.563em;
+  font-size: 1.563em;
 }
 h5 {
-	font-size: 1.25em;
+  font-size: 1.25em;
 }
 strong,
 b {
-	font-weight: 700;
+  font-weight: 700;
 }
 a {
-	color: var(--accent);
-	text-decoration: none;
+  color: var(--accent);
+  text-decoration: none;
 }
 a:hover {
-	color: var(--accent-dark);
+  color: var(--accent-dark);
 }
 
 a:focus-visible,
 button:focus-visible,
 input:focus-visible {
-	outline: 3px solid color-mix(in srgb, var(--accent) 40%, transparent);
-	outline-offset: 3px;
+  outline: 3px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  outline-offset: 3px;
 }
 p {
-	margin-bottom: 1em;
+  margin-bottom: 1em;
 }
 .prose p {
-	margin-bottom: 2em;
+  margin-bottom: 2em;
 }
 textarea {
-	width: 100%;
-	font-size: 16px;
+  width: 100%;
+  font-size: 16px;
 }
 input {
-	font-size: 16px;
+  font-size: 16px;
 }
 table {
-	width: 100%;
+  width: 100%;
 }
 img {
-	max-width: 100%;
-	height: auto;
-	border-radius: 8px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
 }
 code {
-	font-family: var(--font-code);
-	padding: 0.15em 0.38em;
-	background-color: rgb(var(--gray-light));
-	border-radius: 5px;
-	font-size: 0.9em;
+  font-family: var(--font-code);
+  padding: 0.15em 0.38em;
+  background-color: rgb(var(--gray-light));
+  border-radius: 5px;
+  font-size: 0.9em;
 }
 pre {
-	font-family: var(--font-code);
-	padding: 1.5em;
-	border: 1px solid rgb(var(--border));
-	border-radius: 14px;
-	overflow-x: auto;
+  font-family: var(--font-code);
+  padding: 1.5em;
+  border: 1px solid rgb(var(--border));
+  border-radius: 14px;
+  overflow-x: auto;
 }
 pre > code {
-	all: unset;
+  all: unset;
 }
-:root[data-theme='dark'] .astro-code,
-:root[data-theme='dark'] .astro-code span {
-	color: var(--shiki-dark) !important;
-	background-color: var(--shiki-dark-bg) !important;
+:root[data-theme="dark"] .astro-code,
+:root[data-theme="dark"] .astro-code span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
 }
 blockquote {
-	border-left: 4px solid var(--accent);
-	padding: 0 0 0 20px;
-	margin: 0;
-	font-size: 1.333em;
+  border-left: 4px solid var(--accent);
+  padding: 0 0 0 20px;
+  margin: 0;
+  font-size: 1.333em;
 }
 hr {
-	border: none;
-	border-top: 1px solid rgb(var(--border));
+  border: none;
+  border-top: 1px solid rgb(var(--border));
 }
 @media (max-width: 720px) {
-	body {
-		font-size: 17px;
-		line-height: 1.65;
-	}
-	main {
-		padding: 1.25rem 0.875rem 2rem;
-	}
-	h1 {
-		font-size: 2.25rem;
-	}
-	h2 {
-		font-size: 1.8rem;
-	}
-	h3 {
-		font-size: 1.45rem;
-	}
-	h4 {
-		font-size: 1.2rem;
-	}
-	.prose p {
-		margin-bottom: 1.5em;
-	}
-	blockquote {
-		padding-left: 0.875rem;
-		font-size: 1.12em;
-	}
+  body {
+    font-size: 17px;
+    line-height: 1.65;
+  }
+  main {
+    padding: 1.25rem 0.875rem 2rem;
+  }
+  h1 {
+    font-size: 2.25rem;
+  }
+  h2 {
+    font-size: 1.8rem;
+  }
+  h3 {
+    font-size: 1.45rem;
+  }
+  h4 {
+    font-size: 1.2rem;
+  }
+  .prose p {
+    margin-bottom: 1.5em;
+  }
+  blockquote {
+    padding-left: 0.875rem;
+    font-size: 1.12em;
+  }
 }
 
 .sr-only {
-	border: 0;
-	padding: 0;
-	margin: 0;
-	position: absolute !important;
-	height: 1px;
-	width: 1px;
-	overflow: hidden;
-	/* IE6, IE7 - a 0 height clip, off to the bottom right of the visible 1px box */
-	clip: rect(1px 1px 1px 1px);
-	/* maybe deprecated but we need to support legacy browsers */
-	clip: rect(1px, 1px, 1px, 1px);
-	/* modern browsers, clip-path works inwards from each corner */
-	clip-path: inset(50%);
-	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
-	white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  /* IE6, IE7 - a 0 height clip, off to the bottom right of the visible 1px box */
+  clip: rect(1px 1px 1px 1px);
+  /* maybe deprecated but we need to support legacy browsers */
+  clip: rect(1px, 1px, 1px, 1px);
+  /* modern browsers, clip-path works inwards from each corner */
+  clip-path: inset(50%);
+  /* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
+  white-space: nowrap;
 }
 
-:root:not([data-theme='dark']) body {
-	background:
-		radial-gradient(circle at 12% 0%, rgba(49, 94, 251, 0.09), transparent 30rem),
-		linear-gradient(180deg, #fbfcff 0%, rgb(var(--page-bg)) 32rem);
+:root:not([data-theme="dark"]) body {
+  background:
+    radial-gradient(
+      circle at 12% 0%,
+      rgba(49, 94, 251, 0.09),
+      transparent 30rem
+    ),
+    linear-gradient(180deg, #fbfcff 0%, rgb(var(--page-bg)) 32rem);
 }
 
-:root[data-theme='dark'] body {
-	background:
-		radial-gradient(circle at 12% 0%, rgba(94, 121, 255, 0.13), transparent 34rem),
-		rgb(var(--page-bg));
+:root[data-theme="dark"] body {
+  background:
+    radial-gradient(
+      circle at 12% 0%,
+      rgba(94, 121, 255, 0.13),
+      transparent 34rem
+    ),
+    rgb(var(--page-bg));
 }

@@ -1,15 +1,17 @@
 ---
-title: '第一篇博客'
-description: '一篇 Markdown 博客写作测试，演示标题、列表、代码块、引用、表格、公式和链接等常用语法。'
-pubDate: 'Jun 14 2026'
-tags: ['测试', 'Markdown']
-Class: ['日常随笔']
+title: "第一篇博客"
+description: "一篇 Markdown 博客写作测试，演示标题、列表、代码块、引用、表格、公式和链接等常用语法。"
+pubDate: "Jun 14 2026"
+tags: ["测试", "Markdown"]
+Class: ["日常随笔"]
 ---
+
 # 这个也是navi Lee写博客的一个测试。
 
-**粗体***斜体****粗斜体***
+**粗体**_斜体__**粗斜体**_
 
 ---
+
 分割线
 ~~删除线~~
 
@@ -29,7 +31,7 @@ Class: ['日常随笔']
 
 我不知道所谓的`Skill`或者`Prompt Engineering`是不是用markdown写的？
 
-> 这是一个引用:"*They parted best friend*"
+> 这是一个引用:"_They parted best friend_"
 > 这也是一个引用
 
 现在这是一个缩进式的代码块：
@@ -41,8 +43,8 @@ Class: ['日常随笔']
 **那应该是一个react代码**
 
 ```javascript
-export default function Todolist(){
-    return <div>hello</div>
+export default function Todolist() {
+  return <div>hello</div>;
 }
 ```
 
@@ -50,15 +52,12 @@ export default function Todolist(){
 
 [跳转文档最上方](#这个也是navi-lee写博客的一个测试)
 
-|hello|Mark|Down!|
-|-------|-------|------|
-|你好|标记|`向下！`|
+| hello | Mark | Down!    |
+| ----- | ---- | -------- |
+| 你好  | 标记 | `向下！` |
 
 前面是一个表格的示例，下面是LateX的示例
 
 $$f(x)=sin(x)+12$$
 
-
-
 <div style="display:inline-block;padding:8px 12px;background:#e0f7fa;color:#006064;border-radius:6px;font-weight:600;">That concludes the event with CSS</div>
-

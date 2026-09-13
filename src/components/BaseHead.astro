@@ -92,7 +92,7 @@ const jsonLd = [
 <script is:inline>
 	(function () {
 		try {
-			const t = localStorage.getItem('theme');
+			const t = localStorage.getItem('theme-preference');
 			const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 			const theme = t || (prefersDark ? 'dark' : 'light');
 			document.documentElement.setAttribute('data-theme', theme);

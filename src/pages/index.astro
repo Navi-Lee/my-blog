@@ -20,6 +20,12 @@ const recentPosts = (await getCollection('blog'))
 			main {
 				max-width: 1120px;
 				padding: clamp(1.75rem, 3.6vw, 3.75rem) 1rem 5rem;
+				user-select: none;
+				-webkit-user-select: none;
+			}
+			:global(body:has(.hero) header) {
+				user-select: none;
+				-webkit-user-select: none;
 			}
 			.hero {
 				position: relative;
@@ -120,34 +126,60 @@ const recentPosts = (await getCollection('blog'))
 				box-shadow: 0 8px 18px rgba(var(--black), 0.09);
 				color: var(--accent);
 			}
+			.terminal-drag {
+				z-index: 2;
+				align-self: center;
+				transform: translate(var(--drag-x, 0px), var(--drag-y, 0px));
+				will-change: transform;
+			}
 			.terminal {
 				position: relative;
 				isolation: isolate;
 				overflow: hidden;
-				align-self: center;
 				padding: 1rem 1.05rem 1.15rem;
 				border: 1px solid rgba(143, 169, 255, 0.26);
 				border-radius: 15px;
-				background: linear-gradient(145deg, #17223a, #0c1220 72%);
+				background: rgba(12, 18, 32, 0.64);
+				backdrop-filter: blur(16px);
+				-webkit-backdrop-filter: blur(16px);
 				box-shadow: 0 22px 44px rgba(49, 94, 251, 0.2), 0 12px 26px rgba(8, 13, 28, 0.18);
 				color: #dce5ff;
 				font-family: var(--font-code);
 				animation: terminal-float 6s ease-in-out infinite;
 			}
+			/* Fade the opaque surface over the glass; gradients cannot interpolate
+			   smoothly into a translucent solid background. */
 			.terminal::before {
 				content: '';
 				position: absolute;
 				inset: 0;
-				background: radial-gradient(circle at 85% 10%, rgba(100, 134, 255, 0.2), transparent 42%);
+				border-radius: inherit;
 				pointer-events: none;
+				background: linear-gradient(145deg, #17223a, #0c1220 72%);
+				opacity: 1;
+				transition: opacity 0.4s ease-in-out;
 			}
 			.terminal > * { position: relative; z-index: 1; }
+			:global(:root[data-theme='dark']) .terminal {
+				background: rgba(12, 18, 32, 0.32);
+				backdrop-filter: blur(24px);
+				-webkit-backdrop-filter: blur(24px);
+			}
+			.terminal-drag.is-overlapping .terminal::before {
+				opacity: 0;
+			}
+			.terminal-drag.has-moved .terminal { animation: none; }
+			.terminal-drag.is-dragging { z-index: 10; }
 			.terminal-bar {
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
 				margin-bottom: 1.15rem;
+				cursor: grab;
+				touch-action: none;
+				user-select: none;
 			}
+			.terminal-drag.is-dragging .terminal-bar { cursor: grabbing; }
 			.terminal-dots { display: flex; gap: 0.38rem; }
 			.terminal-dots i { width: 8px; height: 8px; border-radius: 50%; background: #ff6868; }
 			.terminal-dots i:nth-child(2) { background: #ffca5d; }
@@ -176,6 +208,8 @@ const recentPosts = (await getCollection('blog'))
 				caret-color: #91a8ff;
 				white-space: pre-wrap;
 				word-break: break-word;
+				user-select: text;
+				-webkit-user-select: text;
 			}
 			.terminal-editor::-webkit-scrollbar { display: none; }
 			.terminal-editor::selection { background: rgba(110, 139, 255, 0.35); }
@@ -270,7 +304,7 @@ const recentPosts = (await getCollection('blog'))
 			}
 			@media (max-width: 820px) {
 				.hero { grid-template-columns: 1fr; }
-				.terminal { display: none; }
+				.terminal-drag { display: none; }
 				.post-grid { grid-template-columns: 1fr; }
 				.post-card { min-height: 190px; }
 			}
@@ -300,13 +334,14 @@ const recentPosts = (await getCollection('blog'))
 						<a class="button" href="mailto:LeeNavi@foxmail.com">与我联系</a>
 					</div>
 				</div>
+				<div id="terminal-drag" class="terminal-drag">
 				<aside class="terminal" aria-label="可编辑代码终端">
-					<div class="terminal-bar"><div class="terminal-dots" aria-hidden="true"><i></i><i></i><i></i></div><span class="terminal-path">~/navi</span></div>
+					<div class="terminal-bar"><div class="terminal-dots" aria-hidden="true"><i></i><i></i><i></i></div><span class="terminal-path">~/draggable</span></div>
 					<pre id="terminal-editor" class="terminal-editor" contenteditable="true" role="textbox" aria-multiline="true" spellcheck="false" aria-label="编辑终端代码">const navilee = (effort) =&gt;&#123;
   res.push(effort)
 &#125;</pre>
-					</div>
 				</aside>
+				</div>
 			</section>
 			<section class="latest" aria-labelledby="latest-title">
 				<div class="section-heading">
@@ -434,6 +469,75 @@ const recentPosts = (await getCollection('blog'))
 					if (typeCode) window.clearInterval(typeCode);
 					formatEditor();
 				});
+			}
+
+			const dragTarget = document.querySelector<HTMLElement>('#terminal-drag');
+			const dragHandle = dragTarget?.querySelector<HTMLElement>('.terminal-bar');
+			const hero = document.querySelector<HTMLElement>('.hero');
+			const introCopy = document.querySelector<HTMLElement>('.hero > div:first-child');
+			if (dragTarget && dragHandle && hero && introCopy) {
+				let originX = 0;
+				let originY = 0;
+				let pointerStartX = 0;
+				let pointerStartY = 0;
+				let bounds: { minX: number; maxX: number; minY: number; maxY: number } | null = null;
+
+				// Measure rendered text lines, not the empty space in the grid column.
+				const updateGlass = () => {
+					const terminalRect = dragTarget.querySelector('.terminal')!.getBoundingClientRect();
+					const walker = document.createTreeWalker(introCopy, NodeFilter.SHOW_TEXT);
+					const range = document.createRange();
+					let overlaps = false;
+					while (walker.nextNode()) {
+						if (!walker.currentNode.textContent?.trim()) continue;
+						range.selectNodeContents(walker.currentNode);
+						overlaps = Array.from(range.getClientRects()).some((rect) =>
+							rect.width > 0 && rect.height > 0
+							&& terminalRect.left < rect.right && terminalRect.right > rect.left
+							&& terminalRect.top < rect.bottom && terminalRect.bottom > rect.top);
+						if (overlaps) break;
+					}
+					dragTarget.classList.toggle('is-overlapping', overlaps);
+				};
+
+				dragHandle.addEventListener('pointerdown', (event) => {
+					if (event.button !== 0) return;
+					dragTarget.classList.add('has-moved');
+					const targetRect = dragTarget.getBoundingClientRect();
+					const heroRect = hero.getBoundingClientRect();
+					originX = Number.parseFloat(dragTarget.style.getPropertyValue('--drag-x')) || 0;
+					originY = Number.parseFloat(dragTarget.style.getPropertyValue('--drag-y')) || 0;
+					pointerStartX = event.clientX;
+					pointerStartY = event.clientY;
+					bounds = {
+						minX: heroRect.left - targetRect.left + originX,
+						maxX: heroRect.right - targetRect.right + originX,
+						minY: heroRect.top - targetRect.top + originY,
+						maxY: heroRect.bottom - targetRect.bottom + originY,
+					};
+					dragHandle.setPointerCapture(event.pointerId);
+					dragTarget.classList.add('is-dragging');
+				});
+
+				dragHandle.addEventListener('pointermove', (event) => {
+					if (!dragTarget.classList.contains('is-dragging') || !bounds) return;
+					const nextX = Math.min(bounds.maxX, Math.max(bounds.minX, originX + event.clientX - pointerStartX));
+					const nextY = Math.min(bounds.maxY, Math.max(bounds.minY, originY + event.clientY - pointerStartY));
+					dragTarget.style.setProperty('--drag-x', `${nextX}px`);
+					dragTarget.style.setProperty('--drag-y', `${nextY}px`);
+					updateGlass();
+				});
+
+				const stopDragging = () => {
+					dragTarget.classList.remove('is-dragging');
+					updateGlass();
+					bounds = null;
+				};
+				dragHandle.addEventListener('pointerup', stopDragging);
+				dragHandle.addEventListener('pointercancel', stopDragging);
+				dragHandle.addEventListener('lostpointercapture', stopDragging);
+				window.addEventListener('resize', updateGlass);
+				document.fonts.ready.then(updateGlass);
 			}
 		</script>
 	</body>
