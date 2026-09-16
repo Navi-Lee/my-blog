@@ -1,350 +1,405 @@
 ---
-import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import CodeCopy from '../components/CodeCopy.astro';
-import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import GiscusComments from '../components/GiscusComments.astro';
-import Header from '../components/Header.astro';
-import { SITE_AUTHOR, SITE_TITLE, SITE_URL } from '../consts';
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import BaseHead from "../components/BaseHead.astro";
+import ArticleOutline from "../components/ArticleOutline.astro";
+import CodeCopy from "../components/CodeCopy.astro";
+import Footer from "../components/Footer.astro";
+import FormattedDate from "../components/FormattedDate.astro";
+import GiscusComments from "../components/GiscusComments.astro";
+import Header from "../components/Header.astro";
+import { SITE_AUTHOR, SITE_TITLE, SITE_URL } from "../consts";
 
-type Props = CollectionEntry<'blog'>['data'];
+type Props = CollectionEntry<"blog">["data"];
 
-const { title, description, pubDate, latestChangeDate, heroImage, tags } = Astro.props;
-const pageTitle = title.includes(SITE_TITLE) ? title : `${title} | ${SITE_TITLE}`;
+const { title, description, pubDate, latestChangeDate, heroImage, tags } =
+  Astro.props;
+const pageTitle = title.includes(SITE_TITLE)
+  ? title
+  : `${title} | ${SITE_TITLE}`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const articleJsonLd = {
-	'@context': 'https://schema.org',
-	'@type': 'BlogPosting',
-	name: pageTitle,
-	headline: pageTitle,
-	description,
-	url: canonicalURL.toString(),
-	datePublished: pubDate.toISOString(),
-	dateModified: (latestChangeDate || pubDate).toISOString(),
-	author: {
-		'@type': 'Person',
-		name: SITE_AUTHOR,
-		url: SITE_URL,
-	},
-	publisher: {
-		'@type': 'Person',
-		name: SITE_AUTHOR,
-		url: SITE_URL,
-	},
-	isPartOf: {
-		'@type': 'WebSite',
-		name: SITE_TITLE,
-		url: SITE_URL,
-	},
-	image: heroImage ? new URL(heroImage.src, Astro.site).toString() : undefined,
-	mainEntityOfPage: {
-		'@type': 'WebPage',
-		'@id': canonicalURL.toString(),
-	},
-	keywords: tags,
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  name: pageTitle,
+  headline: pageTitle,
+  description,
+  url: canonicalURL.toString(),
+  datePublished: pubDate.toISOString(),
+  dateModified: (latestChangeDate || pubDate).toISOString(),
+  author: {
+    "@type": "Person",
+    name: SITE_AUTHOR,
+    url: SITE_URL,
+  },
+  publisher: {
+    "@type": "Person",
+    name: SITE_AUTHOR,
+    url: SITE_URL,
+  },
+  isPartOf: {
+    "@type": "WebSite",
+    name: SITE_TITLE,
+    url: SITE_URL,
+  },
+  image: heroImage ? new URL(heroImage.src, Astro.site).toString() : undefined,
+  mainEntityOfPage: {
+    "@type": "WebPage",
+    "@id": canonicalURL.toString(),
+  },
+  keywords: tags,
 };
 const breadcrumbJsonLd = {
-	'@context': 'https://schema.org',
-	'@type': 'BreadcrumbList',
-	itemListElement: [
-		{ '@type': 'ListItem', position: 1, name: '首页', item: SITE_URL },
-		{
-			'@type': 'ListItem',
-			position: 2,
-			name: 'Blog',
-			item: new URL('/blog/', Astro.site).toString(),
-		},
-		{
-			'@type': 'ListItem',
-			position: 3,
-			name: title,
-			item: canonicalURL.toString(),
-		},
-	],
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "首页", item: SITE_URL },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Blog",
+      item: new URL("/blog/", Astro.site).toString(),
+    },
+    {
+      "@type": "ListItem",
+      position: 3,
+      name: title,
+      item: canonicalURL.toString(),
+    },
+  ],
 };
 ---
 
 <html lang="zh-CN">
-	<head>
-		<BaseHead
-			title={pageTitle}
-			description={description}
-			image={heroImage}
-			imageAlt={`${title} 封面图`}
-			type="article"
-			publishedTime={pubDate}
-			modifiedTime={latestChangeDate || pubDate}
-			tags={tags}
-		/>
-		<script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
-		<script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
-		<style>
-			main {
-				width: 100%;
-				max-width: 100%;
-				margin: 0;
-				padding: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 800px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: clamp(2rem, 4vw, 3.25rem) 1.25rem 2.25rem;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 2.25rem;
-				padding: 0;
-				text-align: left;
-			}
-			.title h1 {
-				max-width: 720px;
-				margin: 0 0 0.7rem;
-				font-size: clamp(2.15rem, 4vw, 3rem);
-				line-height: 1.12;
-				letter-spacing: -0.04em;
-			}
-			.title-description {
-				max-width: 680px;
-				margin: 0 0 1.1rem;
-				color: rgb(var(--gray));
-				font-size: 1rem;
-				line-height: 1.62;
-			}
-			.reading-note {
-				display: inline-flex;
-				align-items: center;
-				gap: 0.5rem;
-				margin: 0 0 1.25rem;
-				padding: 0.36rem 0.7rem;
-				border: 1px solid color-mix(in srgb, var(--accent) 18%, rgb(var(--border)));
-				border-radius: 999px;
-				background: rgba(var(--accent-soft), 0.38);
-				color: rgb(var(--gray));
-				font-size: 0.76rem;
-				font-weight: 700;
-				letter-spacing: 0.01em;
-			}
-			.reading-note span {
-				width: 7px;
-				height: 7px;
-				border-radius: 50%;
-				background: var(--accent);
-				box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent);
-			}
-			.date {
-				display: flex;
-				gap: 0.55rem;
-				align-items: center;
-				margin-bottom: 0.7rem;
-				color: rgb(var(--gray));
-				font-size: 0.82rem;
-				font-weight: 700;
-				letter-spacing: 0.03em;
-			}
-			.date::before {
-				content: 'Published';
-				color: var(--accent);
-				text-transform: uppercase;
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-			.title hr {
-				width: 4rem;
-				margin: 0;
-				border-top: 3px solid var(--accent);
-			}
-			.article-content {
-				font-size: 1rem;
-				line-height: 1.8;
-				letter-spacing: 0.006em;
-			}
-			.article-content :global(p) {
-				margin: 0 0 1.25em;
-			}
-			.article-content :global(h1) {
-				margin: 2.35rem 0 1rem;
-				font-size: 1.85rem;
-				line-height: 1.35;
-				letter-spacing: -0.03em;
-			}
-			.article-content :global(h2) {
-				position: relative;
-				margin: 2.35rem 0 1rem;
-				padding-left: 0.9rem;
-				font-size: 1.6rem;
-				line-height: 1.35;
-				letter-spacing: -0.025em;
-			}
-			.article-content :global(h2::before) {
-				content: '';
-				position: absolute;
-				top: 0.18em;
-				bottom: 0.18em;
-				left: 0;
-				width: 3px;
-				border-radius: 999px;
-				background: var(--accent);
-			}
-			.article-content :global(h3) {
-				margin: 1.85rem 0 0.8rem;
-				font-size: 1.35rem;
-				line-height: 1.4;
-			}
-			.article-content :global(h4) {
-				margin: 1.8rem 0 0.75rem;
-				font-size: 1.1rem;
-			}
-			.article-content :global(ul),
-			.article-content :global(ol) {
-				margin: 0.65rem 0 1.3rem;
-				padding-left: 1.45rem;
-			}
-			.article-content :global(li) {
-				margin: 0.42rem 0;
-				padding-left: 0.2rem;
-			}
-			.article-content :global(li::marker) {
-				color: var(--accent);
-				font-weight: 700;
-			}
-			.article-content :global(a) {
-				text-decoration: underline;
-				text-decoration-color: color-mix(in srgb, var(--accent) 38%, transparent);
-				text-underline-offset: 0.18em;
-			}
-			.article-content :global(blockquote) {
-				margin: 1.5rem 0;
-				padding: 0.9rem 1.15rem;
-				border-left: 4px solid var(--accent);
-				border-radius: 0 12px 12px 0;
-				background: rgba(var(--surface), 0.68);
-				color: rgb(var(--gray-dark));
-				font-size: 1rem;
-			}
-			.article-content :global(blockquote p:last-child) {
-				margin-bottom: 0;
-			}
-			.article-content :global(code:not(pre code)) {
-				border: 1px solid rgba(var(--border), 0.9);
-				background: rgba(var(--accent-soft), 0.58);
-				color: color-mix(in srgb, var(--accent-dark) 82%, rgb(var(--black)));
-				font-size: 0.88em;
-			}
-			.article-content :global(table) {
-				width: 100%;
-				margin: 1.35rem 0 1.6rem;
-				border-collapse: collapse;
-				font-size: 0.92rem;
-			}
-			.article-content :global(th),
-			.article-content :global(td) {
-				padding: 0.72rem 0.85rem;
-				border: 1px solid rgb(var(--border));
-				text-align: left;
-			}
-			.article-content :global(th) {
-				background: rgba(var(--accent-soft), 0.5);
-				color: rgb(var(--black));
-			}
-			.article-content :global(hr) {
-				margin: 2rem 0;
-			}
-			.article-content :global(img) {
-				margin: 1rem 0 2rem;
-				border: 1px solid rgb(var(--border));
-				border-radius: 14px;
-				box-shadow: 0 14px 36px rgba(var(--black), 0.08);
-			}
-			@media (max-width: 720px) {
-				main {
-					padding: 0 0 2rem;
-				}
-				.hero-image img {
-					border-radius: 0;
-				}
-				.prose {
-					width: 100%;
-					max-width: 100%;
-					padding: 2.25rem 1rem 0;
-				}
-				.title {
-					margin-bottom: 2.5rem;
-					padding: 0;
-				}
-				.title h1 {
-					font-size: clamp(2.15rem, 10vw, 3.15rem);
-					line-height: 1.1;
-				}
-				.date {
-					flex-wrap: wrap;
-					gap: 0.35rem 0.55rem;
-				}
-				.article-content {
-					font-size: 1rem;
-					line-height: 1.82;
-				}
-				.article-content :global(h2) {
-					margin-top: 2.5rem;
-					font-size: 1.5rem;
-				}
-				.article-content :global(h1) {
-					margin-top: 2.5rem;
-					font-size: 1.75rem;
-				}
-				.article-content :global(table) {
-					display: block;
-					overflow-x: auto;
-					white-space: nowrap;
-				}
-			}
-		</style>
-	</head>
+  <head>
+    <BaseHead
+      title={pageTitle}
+      description={description}
+      image={heroImage}
+      imageAlt={`${title} 封面图`}
+      type="article"
+      publishedTime={pubDate}
+      modifiedTime={latestChangeDate || pubDate}
+      tags={tags}
+    />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(articleJsonLd)}
+    ></script>
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(breadcrumbJsonLd)}
+    ></script>
+    <style>
+      main {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .hero-image {
+        width: min(1120px, calc(100% - 2rem));
+        margin: 1.5rem auto 0;
+      }
+      .hero-image img {
+        display: block;
+        margin: 0 auto;
+        border-radius: 12px;
+        box-shadow: var(--box-shadow);
+      }
+      .article-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 800px) minmax(220px, 280px);
+        gap: clamp(2.5rem, 5vw, 5rem);
+        align-items: start;
+        width: min(1180px, calc(100% - 2rem));
+        margin: 0 auto;
+      }
+      .prose {
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+        padding: clamp(2rem, 4vw, 3.25rem) 1.25rem 2.25rem;
+        color: rgb(var(--gray-dark));
+      }
+      .title {
+        margin-bottom: 2.25rem;
+        padding: 0;
+        text-align: left;
+      }
+      .title h1 {
+        max-width: 720px;
+        margin: 0 0 0.7rem;
+        font-size: clamp(2.15rem, 4vw, 3rem);
+        line-height: 1.12;
+        letter-spacing: -0.04em;
+      }
+      .title-description {
+        max-width: 680px;
+        margin: 0 0 1.1rem;
+        color: rgb(var(--gray));
+        font-size: 1rem;
+        line-height: 1.62;
+      }
+      .reading-note {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0 0 1.25rem;
+        padding: 0.36rem 0.7rem;
+        border: 1px solid
+          color-mix(in srgb, var(--accent) 18%, rgb(var(--border)));
+        border-radius: 999px;
+        background: rgba(var(--accent-soft), 0.38);
+        color: rgb(var(--gray));
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+      .reading-note span {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent);
+      }
+      .date {
+        display: flex;
+        gap: 0.55rem;
+        align-items: center;
+        margin-bottom: 0.7rem;
+        color: rgb(var(--gray));
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+      .date::before {
+        content: "Published";
+        color: var(--accent);
+        text-transform: uppercase;
+      }
+      .last-updated-on {
+        font-style: italic;
+      }
+      .title hr {
+        width: 4rem;
+        margin: 0;
+        border-top: 3px solid var(--accent);
+      }
+      .article-content {
+        font-size: 1rem;
+        line-height: 1.8;
+        letter-spacing: 0.006em;
+      }
+      .article-content :global(p) {
+        margin: 0 0 1.25em;
+      }
+      .article-content :global(h1),
+      .article-content :global(h2),
+      .article-content :global(h3),
+      .article-content :global(h4),
+      .article-content :global(li[id]) {
+        scroll-margin-top: 92px;
+      }
+      .article-content :global(h1) {
+        margin: 2.35rem 0 1rem;
+        font-size: 1.85rem;
+        line-height: 1.35;
+        letter-spacing: -0.03em;
+      }
+      .article-content :global(h2) {
+        position: relative;
+        margin: 2.35rem 0 1rem;
+        padding-left: 0.9rem;
+        font-size: 1.6rem;
+        line-height: 1.35;
+        letter-spacing: -0.025em;
+      }
+      .article-content :global(h2::before) {
+        content: "";
+        position: absolute;
+        top: 0.18em;
+        bottom: 0.18em;
+        left: 0;
+        width: 3px;
+        border-radius: 999px;
+        background: var(--accent);
+      }
+      .article-content :global(h3) {
+        margin: 1.85rem 0 0.8rem;
+        font-size: 1.35rem;
+        line-height: 1.4;
+      }
+      .article-content :global(h4) {
+        margin: 1.8rem 0 0.75rem;
+        font-size: 1.1rem;
+      }
+      .article-content :global(ul),
+      .article-content :global(ol) {
+        margin: 0.65rem 0 1.3rem;
+        padding-left: 1.45rem;
+      }
+      .article-content :global(li) {
+        margin: 0.42rem 0;
+        padding-left: 0.2rem;
+      }
+      .article-content :global(li::marker) {
+        color: var(--accent);
+        font-weight: 700;
+      }
+      .article-content :global(a) {
+        text-decoration: underline;
+        text-decoration-color: color-mix(
+          in srgb,
+          var(--accent) 38%,
+          transparent
+        );
+        text-underline-offset: 0.18em;
+      }
+      .article-content :global(blockquote) {
+        margin: 1.5rem 0;
+        padding: 0.9rem 1.15rem;
+        border-left: 4px solid var(--accent);
+        border-radius: 0 12px 12px 0;
+        background: rgba(var(--surface), 0.68);
+        color: rgb(var(--gray-dark));
+        font-size: 1rem;
+      }
+      .article-content :global(blockquote p:last-child) {
+        margin-bottom: 0;
+      }
+      .article-content :global(code:not(pre code)) {
+        border: 1px solid rgba(var(--border), 0.9);
+        background: rgba(var(--accent-soft), 0.58);
+        color: color-mix(in srgb, var(--accent-dark) 82%, rgb(var(--black)));
+        font-size: 0.88em;
+      }
+      .article-content :global(table) {
+        width: 100%;
+        margin: 1.35rem 0 1.6rem;
+        border-collapse: collapse;
+        font-size: 0.92rem;
+      }
+      .article-content :global(th),
+      .article-content :global(td) {
+        padding: 0.72rem 0.85rem;
+        border: 1px solid rgb(var(--border));
+        text-align: left;
+      }
+      .article-content :global(th) {
+        background: rgba(var(--accent-soft), 0.5);
+        color: rgb(var(--black));
+      }
+      .article-content :global(hr) {
+        margin: 2rem 0;
+      }
+      .article-content :global(img) {
+        margin: 1rem 0 2rem;
+        border: 1px solid rgb(var(--border));
+        border-radius: 14px;
+        box-shadow: 0 14px 36px rgba(var(--black), 0.08);
+      }
+      @media (max-width: 1080px) {
+        .article-layout {
+          display: block;
+          width: min(840px, calc(100% - 2rem));
+        }
+      }
+      @media (max-width: 720px) {
+        main {
+          padding: 0 0 2rem;
+        }
+        .hero-image img {
+          border-radius: 0;
+        }
+        .hero-image {
+          width: 100%;
+          margin-top: 0;
+        }
+        .article-layout {
+          width: 100%;
+        }
+        .prose {
+          width: 100%;
+          max-width: 100%;
+          padding: 2.25rem 1rem 0;
+        }
+        .title {
+          margin-bottom: 2.5rem;
+          padding: 0;
+        }
+        .title h1 {
+          font-size: clamp(2.15rem, 10vw, 3.15rem);
+          line-height: 1.1;
+        }
+        .date {
+          flex-wrap: wrap;
+          gap: 0.35rem 0.55rem;
+        }
+        .article-content {
+          font-size: 1rem;
+          line-height: 1.82;
+        }
+        .article-content :global(h2) {
+          margin-top: 2.5rem;
+          font-size: 1.5rem;
+        }
+        .article-content :global(h1) {
+          margin-top: 2.5rem;
+          font-size: 1.75rem;
+        }
+        .article-content :global(table) {
+          display: block;
+          overflow-x: auto;
+          white-space: nowrap;
+        }
+      }
+    </style>
+  </head>
 
-	<body>
-		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt={`${title} 封面图`} loading="eager" />}
-				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								latestChangeDate && (
-									<div class="last-updated-on">
-										更新于 <FormattedDate date={latestChangeDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<p class="title-description">{description}</p>
-						<div class="reading-note" aria-label="阅读提示"><span></span>向下滚动可查看阅读进度</div>
-						<hr />
-					</div>
-					<div class="article-content">
-						<slot />
-					</div>
-				</div>
-				<GiscusComments />
-			</article>
-		</main>
-		<Footer />
-		<CodeCopy />
-	</body>
+  <body>
+    <Header />
+    <main>
+      <article>
+        <div class="hero-image">
+          {heroImage && (
+            <Image
+              width={1020}
+              height={510}
+              src={heroImage}
+              alt={`${title} 封面图`}
+              loading="eager"
+            />
+          )}
+        </div>
+        <div class="article-layout">
+          <div class="prose">
+            <div class="title">
+              <div class="date">
+                <FormattedDate date={pubDate} />
+                {latestChangeDate && (
+                  <div class="last-updated-on">
+                    更新于 <FormattedDate date={latestChangeDate} />
+                  </div>
+                )}
+              </div>
+              <h1>{title}</h1>
+              <p class="title-description">{description}</p>
+              <div class="reading-note" aria-label="阅读提示">
+                <span></span>向下滚动可查看阅读进度
+              </div>
+              <hr />
+            </div>
+            <div class="article-content">
+              <slot />
+            </div>
+          </div>
+          <ArticleOutline />
+        </div>
+        <GiscusComments />
+      </article>
+    </main>
+    <Footer />
+    <CodeCopy />
+  </body>
 </html>

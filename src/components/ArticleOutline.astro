@@ -1,0 +1,445 @@
+---
+// The outline is intentionally built from the rendered article DOM.
+// This keeps every label traceable to Markdown content and avoids generated copy.
+---
+
+<button
+  class="outline-trigger"
+  type="button"
+  aria-controls="article-outline"
+  aria-expanded="false"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M8 6h11M8 12h11M8 18h11M4 6h.01M4 12h.01M4 18h.01" />
+  </svg>
+  <span>大纲</span>
+</button>
+
+<div class="outline-backdrop" aria-hidden="true"></div>
+
+<aside id="article-outline" class="article-outline" aria-label="文章大纲">
+  <div class="outline-panel">
+    <div class="outline-header">
+      <div>
+        <p class="outline-kicker">ON THIS PAGE</p>
+        <h2>大纲</h2>
+      </div>
+      <button class="outline-close" type="button" aria-label="关闭大纲">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="m6 6 12 12M18 6 6 18" />
+        </svg>
+      </button>
+    </div>
+    <nav class="outline-nav" aria-label="文章章节">
+      <ol class="outline-list"></ol>
+      <p class="outline-empty" hidden>
+        这篇文章暂无可用大纲
+      </p>
+    </nav>
+  </div>
+</aside>
+
+<style>
+  .article-outline {
+    position: fixed;
+    top: 92px;
+    right: max(1rem, calc((100vw - 1180px) / 2));
+    bottom: 1.5rem;
+    z-index: 12;
+    width: 280px;
+    min-width: 0;
+    opacity: 1;
+    transform: translate(0, 0);
+    will-change: top, opacity, transform;
+    transition:
+      top 0.36s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.28s ease,
+      transform 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .article-outline.is-centered {
+    top: 50%;
+    bottom: auto;
+    height: min(720px, calc(100vh - 2rem));
+    transform: translateY(-50%);
+  }
+  .article-outline.is-outside {
+    opacity: 0;
+    transform: translateX(44px);
+    pointer-events: none;
+  }
+  .article-outline.is-centered.is-outside {
+    transform: translate(44px, -50%);
+  }
+  .outline-panel {
+    height: 100%;
+    padding: 1.15rem 0 1rem 1.2rem;
+    border-left: 1px solid rgb(var(--border));
+  }
+  .outline-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.8rem;
+  }
+  .outline-kicker {
+    margin: 0 0 0.2rem;
+    color: var(--accent);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+  .outline-header h2 {
+    margin: 0;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+  }
+  .outline-nav {
+    position: relative;
+    max-height: calc(100% - 60px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--gray), 0.3) transparent;
+  }
+  .outline-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .outline-list :global(li) {
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+  .outline-list :global(a) {
+    display: block;
+    overflow: hidden;
+    padding: 0.38rem 0.65rem 0.38rem
+      calc(0.65rem + (var(--outline-level) - 1) * 0.72rem);
+    border-radius: 7px;
+    color: rgb(var(--gray));
+    font-size: 0.78rem;
+    line-height: 1.45;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition:
+      color 0.18s ease,
+      background-color 0.18s ease;
+  }
+  .outline-list :global(a:hover) {
+    background: rgba(var(--accent-soft), 0.5);
+    color: rgb(var(--black));
+  }
+  .outline-list :global(a.is-active) {
+    background: rgba(var(--accent-soft), 0.66);
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .outline-list :global(a.is-active::before) {
+    content: "";
+    position: absolute;
+    top: 0.58rem;
+    bottom: 0.58rem;
+    left: 0;
+    width: 2px;
+    border-radius: 99px;
+    background: var(--accent);
+  }
+  .outline-list :global(.outline-point a) {
+    color: color-mix(in srgb, rgb(var(--gray)) 82%, transparent);
+    font-size: 0.73rem;
+  }
+  .outline-list :global(.outline-point a::after) {
+    content: "";
+    position: absolute;
+    top: 0.82rem;
+    left: calc(0.58rem + (var(--outline-level) - 1) * 0.72rem);
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.65;
+  }
+  .outline-empty {
+    margin: 0;
+    color: rgb(var(--gray));
+    font-size: 0.78rem;
+  }
+  .outline-trigger,
+  .outline-close,
+  .outline-backdrop {
+    display: none;
+  }
+
+  @media (max-width: 1080px) {
+    .outline-trigger {
+      position: fixed;
+      right: 1rem;
+      bottom: 4.8rem;
+      z-index: 31;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      min-height: 42px;
+      padding: 0.55rem 0.8rem;
+      border: 1px solid rgb(var(--border));
+      border-radius: 12px;
+      background: rgba(var(--surface), 0.9);
+      box-shadow: 0 12px 30px rgba(var(--black), 0.14);
+      color: rgb(var(--black));
+      font: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .outline-trigger svg,
+    .outline-close svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+    }
+    .article-outline {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 42;
+      width: min(340px, 86vw);
+      padding: 0;
+      background: rgb(var(--surface));
+      box-shadow: -18px 0 48px rgba(var(--black), 0.16);
+      transform: translateX(105%);
+      visibility: hidden;
+      transition:
+        transform 0.22s ease,
+        visibility 0.22s;
+    }
+    .article-outline.is-open {
+      transform: translateX(0);
+      visibility: visible;
+    }
+    .outline-panel {
+      position: static;
+      padding: max(1.25rem, env(safe-area-inset-top)) 1rem 1rem;
+      border-left: 0;
+    }
+    .outline-nav {
+      max-height: calc(100vh - 92px);
+    }
+    .outline-close {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      place-items: center;
+      border: 1px solid rgb(var(--border));
+      border-radius: 9px;
+      background: transparent;
+      color: rgb(var(--black));
+    }
+    .outline-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 41;
+      background: rgba(9, 12, 19, 0.35);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+    }
+    .outline-backdrop.is-open {
+      display: block;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .article-outline,
+    .article-outline.is-centered,
+    .article-outline.is-outside {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  const article = document.querySelector<HTMLElement>(".article-content");
+  const outline = document.querySelector<HTMLElement>(".article-outline");
+  const list = document.querySelector<HTMLOListElement>(".outline-list");
+  const outlineNav = document.querySelector<HTMLElement>(".outline-nav");
+  const empty = document.querySelector<HTMLElement>(".outline-empty");
+  const trigger = document.querySelector<HTMLButtonElement>(".outline-trigger");
+  const closeButton =
+    document.querySelector<HTMLButtonElement>(".outline-close");
+  const backdrop = document.querySelector<HTMLElement>(".outline-backdrop");
+  const articleLayout = document.querySelector<HTMLElement>(".article-layout");
+  const articleTitle = document.querySelector<HTMLElement>(".title");
+  const pageHeader = document.querySelector<HTMLElement>("body > header");
+
+  function updateOutlinePosition() {
+    if (!outline || !articleLayout) return;
+    if (window.innerWidth <= 1080) {
+      outline.classList.remove("is-centered", "is-outside");
+      return;
+    }
+
+    const layoutRect = articleLayout.getBoundingClientRect();
+    const headerRect = pageHeader?.getBoundingClientRect();
+    const headerHasPassed = headerRect
+      ? headerRect.bottom <= 0
+      : (articleTitle?.getBoundingClientRect().bottom ?? layoutRect.top) <= 20;
+    const articleExitLine = Math.min(360, window.innerHeight * 0.42);
+    const outsideArticle =
+      layoutRect.bottom <= articleExitLine ||
+      layoutRect.top >= window.innerHeight;
+
+    outline.classList.toggle("is-centered", headerHasPassed);
+    outline.classList.toggle("is-outside", outsideArticle);
+  }
+
+  function cleanText(element: Element, isListItem: boolean) {
+    const copy = element.cloneNode(true) as HTMLElement;
+    if (isListItem)
+      copy.querySelectorAll("ul, ol, pre").forEach((child) => child.remove());
+    return (copy.textContent || "").replace(/\s+/g, " ").trim();
+  }
+
+  function shorten(text: string, limit: number) {
+    const characters = Array.from(text);
+    return characters.length > limit
+      ? `${characters.slice(0, limit).join("")}…`
+      : text;
+  }
+
+  function openOutline(open: boolean) {
+    outline?.classList.toggle("is-open", open);
+    backdrop?.classList.toggle("is-open", open);
+    trigger?.setAttribute("aria-expanded", String(open));
+    document.body.style.overflow = open ? "hidden" : "";
+    if (open)
+      outline?.querySelector<HTMLAnchorElement>("a.is-active, a")?.focus();
+  }
+
+  function followActiveItem(link: HTMLAnchorElement) {
+    if (!outlineNav || !list) return;
+
+    const viewportHeight = outlineNav.clientHeight;
+    if (viewportHeight <= 0) return;
+
+    const navRect = outlineNav.getBoundingClientRect();
+    const linkRect = link.getBoundingClientRect();
+    const linkCenter = linkRect.top - navRect.top + linkRect.height / 2;
+    const upperBoundary = viewportHeight / 3;
+    const lowerBoundary = (viewportHeight * 2) / 3;
+
+    if (linkCenter < upperBoundary || linkCenter > lowerBoundary) {
+      const targetScrollTop =
+        outlineNav.scrollTop + linkCenter - viewportHeight / 2;
+      outlineNav.scrollTo({ top: targetScrollTop, behavior: "smooth" });
+    }
+  }
+
+  if (article && list) {
+    const usedIds = new Set<string>();
+    const sourceElements = Array.from(
+      article.querySelectorAll<HTMLElement>("h1, h2, h3, h4, li"),
+    );
+    let currentHeadingLevel = 1;
+    let pointIndex = 0;
+    const entries: Array<{ source: HTMLElement; link: HTMLAnchorElement }> = [];
+
+    for (const source of sourceElements) {
+      const isHeading = /^H[1-4]$/.test(source.tagName);
+      const isListItem = source.tagName === "LI";
+      if (isListItem && source.closest("li li li")) continue;
+
+      const fullText = cleanText(source, isListItem);
+      if (!fullText) continue;
+
+      let level: number;
+      if (isHeading) {
+        currentHeadingLevel = Number(source.tagName.slice(1));
+        level = currentHeadingLevel;
+      } else {
+        const listDepth = source.closest("li li") ? 2 : 1;
+        level = Math.min(4, currentHeadingLevel + listDepth);
+      }
+
+      let id = source.id;
+      if (!id || usedIds.has(id)) {
+        pointIndex += 1;
+        id = `${isHeading ? "section" : "point"}-${pointIndex}`;
+        source.id = id;
+      }
+      usedIds.add(id);
+
+      const item = document.createElement("li");
+      item.className = isListItem ? "outline-point" : "outline-heading";
+      item.style.setProperty("--outline-level", String(level));
+      const link = document.createElement("a");
+      link.href = `#${id}`;
+      link.textContent = shorten(fullText, isListItem ? 28 : 34);
+      link.title = fullText;
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        openOutline(false);
+        history.replaceState(null, "", `#${encodeURIComponent(id)}`);
+        requestAnimationFrame(() =>
+          source.scrollIntoView({ behavior: "auto", block: "start" }),
+        );
+      });
+      item.append(link);
+      list.append(item);
+      entries.push({ source, link });
+    }
+
+    empty?.toggleAttribute("hidden", entries.length > 0);
+    trigger?.toggleAttribute("hidden", entries.length === 0);
+
+    let activeLink: HTMLAnchorElement | undefined;
+    let ticking = false;
+    function updateActiveItem() {
+      updateOutlinePosition();
+      const marker = Math.min(180, window.innerHeight * 0.24);
+      let current = entries[0];
+      for (const entry of entries) {
+        if (entry.source.getBoundingClientRect().top <= marker) current = entry;
+        else break;
+      }
+      if (current && current.link !== activeLink) {
+        activeLink?.classList.remove("is-active");
+        current.link.classList.add("is-active");
+        current.link.setAttribute("aria-current", "location");
+        if (activeLink) activeLink.removeAttribute("aria-current");
+        activeLink = current.link;
+        followActiveItem(current.link);
+      }
+      ticking = false;
+    }
+
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(updateActiveItem);
+          ticking = true;
+        }
+      },
+      { passive: true },
+    );
+      updateActiveItem();
+    }
+
+  updateOutlinePosition();
+
+  trigger?.addEventListener("click", () => openOutline(true));
+  closeButton?.addEventListener("click", () => openOutline(false));
+  backdrop?.addEventListener("click", () => openOutline(false));
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") openOutline(false);
+  });
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 1080) openOutline(false);
+    updateOutlinePosition();
+  });
+</script>
