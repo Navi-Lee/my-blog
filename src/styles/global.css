@@ -9,6 +9,7 @@
 }
 
 :root {
+  color-scheme: light;
   --font-code: Consolas, "Cascadia Code", "Courier New", monospace;
   --accent: #315efb;
   --accent-dark: #1d3ecf;
@@ -32,6 +33,7 @@ html {
 }
 
 :root[data-theme="dark"] {
+  color-scheme: dark;
   --accent: #8ea8ff;
   --accent-dark: #5e79ff;
   --accent-soft: 29, 43, 82;
@@ -104,6 +106,21 @@ a {
 }
 a:hover {
   color: var(--accent-dark);
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.55rem 0.85rem;
+  border-radius: 9px;
+  background: rgb(var(--surface));
+  color: var(--accent);
+  transform: translateY(-150%);
+}
+.skip-link:focus {
+  transform: translateY(0);
 }
 
 a:focus-visible,
@@ -230,4 +247,15 @@ hr {
       transparent 34rem
     ),
     rgb(var(--page-bg));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

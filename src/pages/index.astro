@@ -20,12 +20,6 @@ const recentPosts = (await getCollection('blog'))
 			main {
 				max-width: 1120px;
 				padding: clamp(1.75rem, 3.6vw, 3.75rem) 1rem 5rem;
-				user-select: none;
-				-webkit-user-select: none;
-			}
-			:global(body:has(.hero) header) {
-				user-select: none;
-				-webkit-user-select: none;
 			}
 			.hero {
 				position: relative;
@@ -212,6 +206,7 @@ const recentPosts = (await getCollection('blog'))
 				-webkit-user-select: text;
 			}
 			.terminal-editor::-webkit-scrollbar { display: none; }
+			.terminal-editor:focus-visible { outline: 2px solid #91a8ff; outline-offset: 4px; }
 			.terminal-editor::selection { background: rgba(110, 139, 255, 0.35); }
 			.terminal-editor :global(.code-keyword) { color: #63c9ff; font-weight: 700; }
 			.terminal-editor :global(.code-string) { color: #f0cf71; }
@@ -321,7 +316,7 @@ const recentPosts = (await getCollection('blog'))
 	</head>
 	<body>
 		<Header />
-		<main>
+		<main id="main-content" tabindex="-1">
 			<section class="hero" aria-labelledby="intro-title">
 				<div>
 					<h1 id="intro-title">Hi, I'm <span>Navi Lee.</span></h1>
@@ -465,9 +460,15 @@ const recentPosts = (await getCollection('blog'))
 						insertLineBreak();
 					}
 				});
+				let composing = false;
+				editor.addEventListener('compositionstart', () => { composing = true; });
+				editor.addEventListener('compositionend', () => {
+					composing = false;
+					formatEditor();
+				});
 				editor.addEventListener('input', () => {
 					if (typeCode) window.clearInterval(typeCode);
-					formatEditor();
+					if (!composing) formatEditor();
 				});
 			}
 
@@ -499,6 +500,14 @@ const recentPosts = (await getCollection('blog'))
 					}
 					dragTarget.classList.toggle('is-overlapping', overlaps);
 				};
+				let glassFrame = 0;
+				const scheduleGlass = () => {
+					if (glassFrame) return;
+					glassFrame = window.requestAnimationFrame(() => {
+						glassFrame = 0;
+						updateGlass();
+					});
+				};
 
 				dragHandle.addEventListener('pointerdown', (event) => {
 					if (event.button !== 0) return;
@@ -525,19 +534,19 @@ const recentPosts = (await getCollection('blog'))
 					const nextY = Math.min(bounds.maxY, Math.max(bounds.minY, originY + event.clientY - pointerStartY));
 					dragTarget.style.setProperty('--drag-x', `${nextX}px`);
 					dragTarget.style.setProperty('--drag-y', `${nextY}px`);
-					updateGlass();
+					scheduleGlass();
 				});
 
 				const stopDragging = () => {
 					dragTarget.classList.remove('is-dragging');
-					updateGlass();
+					scheduleGlass();
 					bounds = null;
 				};
 				dragHandle.addEventListener('pointerup', stopDragging);
 				dragHandle.addEventListener('pointercancel', stopDragging);
 				dragHandle.addEventListener('lostpointercapture', stopDragging);
-				window.addEventListener('resize', updateGlass);
-				document.fonts.ready.then(updateGlass);
+				window.addEventListener('resize', scheduleGlass);
+				document.fonts.ready.then(scheduleGlass);
 			}
 		</script>
 	</body>

@@ -3,7 +3,7 @@
 ---
 
 <div class="reading-progress" aria-hidden="true"><span></span></div>
-<button class="back-to-top" type="button" aria-label="回到页面顶部" title="回到顶部">
+<button class="back-to-top" type="button" aria-label="回到页面顶部" title="回到顶部" tabindex="-1" aria-hidden="true">
 	<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 14 6-6 6 6M12 8v12" /></svg>
 </button>
 
@@ -71,7 +71,12 @@
 		const scrollable = document.documentElement.scrollHeight - window.innerHeight;
 		const progress = scrollable > 0 ? Math.min(100, (window.scrollY / scrollable) * 100) : 0;
 		root.style.setProperty('--scroll-progress', `${progress}%`);
-		backToTop?.classList.toggle('is-visible', window.scrollY > 420);
+		const visible = window.scrollY > 420;
+		backToTop?.classList.toggle('is-visible', visible);
+		if (backToTop) {
+			backToTop.tabIndex = visible ? 0 : -1;
+			backToTop.setAttribute('aria-hidden', String(!visible));
+		}
 		ticking = false;
 	}
 
@@ -84,6 +89,6 @@
 
 	window.addEventListener('scroll', requestUpdate, { passive: true });
 	window.addEventListener('resize', requestUpdate);
-	backToTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+	backToTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }));
 	updatePageUtilities();
 </script>

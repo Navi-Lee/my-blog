@@ -145,21 +145,6 @@
     border-radius: 99px;
     background: var(--accent);
   }
-  .outline-list :global(.outline-point a) {
-    color: color-mix(in srgb, rgb(var(--gray)) 82%, transparent);
-    font-size: 0.73rem;
-  }
-  .outline-list :global(.outline-point a::after) {
-    content: "";
-    position: absolute;
-    top: 0.82rem;
-    left: calc(0.58rem + (var(--outline-level) - 1) * 0.72rem);
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: 0.65;
-  }
   .outline-empty {
     margin: 0;
     color: rgb(var(--gray));
@@ -168,6 +153,10 @@
   .outline-trigger,
   .outline-close,
   .outline-backdrop {
+    display: none;
+  }
+
+  .outline-trigger[hidden] {
     display: none;
   }
 
@@ -280,6 +269,7 @@
     if (!outline || !articleLayout) return;
     if (window.innerWidth <= 1080) {
       outline.classList.remove("is-centered", "is-outside");
+      outline.inert = !outline.classList.contains("is-open");
       return;
     }
 
@@ -295,13 +285,7 @@
 
     outline.classList.toggle("is-centered", headerHasPassed);
     outline.classList.toggle("is-outside", outsideArticle);
-  }
-
-  function cleanText(element: Element, isListItem: boolean) {
-    const copy = element.cloneNode(true) as HTMLElement;
-    if (isListItem)
-      copy.querySelectorAll("ul, ol, pre").forEach((child) => child.remove());
-    return (copy.textContent || "").replace(/\s+/g, " ").trim();
+    outline.inert = outsideArticle;
   }
 
   function shorten(text: string, limit: number) {
@@ -312,12 +296,19 @@
   }
 
   function openOutline(open: boolean) {
+    if (!outline || !trigger || !backdrop) return;
     outline?.classList.toggle("is-open", open);
     backdrop?.classList.toggle("is-open", open);
     trigger?.setAttribute("aria-expanded", String(open));
-    document.body.style.overflow = open ? "hidden" : "";
-    if (open)
-      outline?.querySelector<HTMLAnchorElement>("a.is-active, a")?.focus();
+    if (window.innerWidth <= 1080) {
+      outline.inert = !open;
+      document.body.style.overflow = open ? "hidden" : "";
+      outline.setAttribute("role", open ? "dialog" : "complementary");
+      if (open) outline.setAttribute("aria-modal", "true");
+      else outline.removeAttribute("aria-modal");
+      if (open) closeButton?.focus();
+      else if (outline.contains(document.activeElement)) trigger.focus();
+    }
   }
 
   function followActiveItem(link: HTMLAnchorElement) {
@@ -342,43 +333,30 @@
   if (article && list) {
     const usedIds = new Set<string>();
     const sourceElements = Array.from(
-      article.querySelectorAll<HTMLElement>("h1, h2, h3, h4, li"),
+      article.querySelectorAll<HTMLElement>("h1, h2, h3, h4"),
     );
-    let currentHeadingLevel = 1;
     let pointIndex = 0;
     const entries: Array<{ source: HTMLElement; link: HTMLAnchorElement }> = [];
 
     for (const source of sourceElements) {
-      const isHeading = /^H[1-4]$/.test(source.tagName);
-      const isListItem = source.tagName === "LI";
-      if (isListItem && source.closest("li li li")) continue;
-
-      const fullText = cleanText(source, isListItem);
+      const fullText = (source.textContent || "").replace(/\s+/g, " ").trim();
       if (!fullText) continue;
-
-      let level: number;
-      if (isHeading) {
-        currentHeadingLevel = Number(source.tagName.slice(1));
-        level = currentHeadingLevel;
-      } else {
-        const listDepth = source.closest("li li") ? 2 : 1;
-        level = Math.min(4, currentHeadingLevel + listDepth);
-      }
+      const level = Number(source.tagName.slice(1));
 
       let id = source.id;
       if (!id || usedIds.has(id)) {
         pointIndex += 1;
-        id = `${isHeading ? "section" : "point"}-${pointIndex}`;
+        id = `section-${pointIndex}`;
         source.id = id;
       }
       usedIds.add(id);
 
       const item = document.createElement("li");
-      item.className = isListItem ? "outline-point" : "outline-heading";
+      item.className = "outline-heading";
       item.style.setProperty("--outline-level", String(level));
       const link = document.createElement("a");
       link.href = `#${id}`;
-      link.textContent = shorten(fullText, isListItem ? 28 : 34);
+      link.textContent = shorten(fullText, 34);
       link.title = fullText;
       link.addEventListener("click", (event) => {
         event.preventDefault();
@@ -437,9 +415,28 @@
   backdrop?.addEventListener("click", () => openOutline(false));
   window.addEventListener("keydown", (event) => {
     if (event.key === "Escape") openOutline(false);
+    if (event.key !== "Tab" || !outline?.classList.contains("is-open")) return;
+    const focusable = Array.from(outline.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'));
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
   });
   window.addEventListener("resize", () => {
-    if (window.innerWidth > 1080) openOutline(false);
+    if (window.innerWidth > 1080) {
+      outline?.classList.remove("is-open");
+      backdrop?.classList.remove("is-open");
+      trigger?.setAttribute("aria-expanded", "false");
+      outline?.removeAttribute("aria-modal");
+      outline?.removeAttribute("role");
+      document.body.style.overflow = "";
+    }
     updateOutlinePosition();
   });
 </script>

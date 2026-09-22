@@ -1,4 +1,4 @@
-<section class="comments" aria-label="评论区">
+<section class="comments" aria-label="评论区" data-pagefind-ignore>
 	<h2>评论</h2>
 	<p class="comments-note">使用 GitHub 登录后即可参与讨论。</p>
 	<p class="comments-note">不可发布任何违反中华人民共和国有关法律的内容。违者评论将被删除且拉黑处理。</p>
@@ -43,11 +43,6 @@
 		function getTheme() {
 			let siteTheme = document.documentElement.getAttribute('data-theme');
 			if (!siteTheme) {
-				try {
-					siteTheme = localStorage.getItem('theme');
-				} catch (e) {}
-			}
-			if (!siteTheme) {
 				const prefersDark =
 					window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 				siteTheme = prefersDark ? 'dark' : 'light';
@@ -76,7 +71,16 @@
 			window.setTimeout(syncTheme, 200);
 			window.setTimeout(syncTheme, 800);
 		});
-		container.appendChild(script);
+		if ('IntersectionObserver' in window) {
+			const observer = new IntersectionObserver((entries) => {
+				if (!entries.some((entry) => entry.isIntersecting)) return;
+				observer.disconnect();
+				container.appendChild(script);
+			}, { rootMargin: '600px' });
+			observer.observe(container);
+		} else {
+			container.appendChild(script);
+		}
 
 		function syncTheme() {
 			const frame = document.querySelector('iframe.giscus-frame');

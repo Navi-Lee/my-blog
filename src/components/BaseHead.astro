@@ -15,6 +15,7 @@ import {
 } from '../consts';
 import { Font } from 'astro:assets';
 import '../styles/global.css';
+import { serializeJsonLd } from '../utils/jsonLd';
 
 interface Props {
 	title: string;
@@ -91,16 +92,17 @@ const jsonLd = [
 <meta charset="utf-8" />
 <script is:inline>
 	(function () {
+		let override = null;
 		try {
-			const t = localStorage.getItem('theme-preference');
-			const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-			const theme = t || (prefersDark ? 'dark' : 'light');
-			document.documentElement.setAttribute('data-theme', theme);
-			if (theme === 'dark') {
-				document.documentElement.style.backgroundColor = '#0a0c14';
-				document.documentElement.style.color = '#eaeef6';
-			}
+			override = sessionStorage.getItem('theme-override');
 		} catch (e) {}
+		const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+		const theme = override === 'dark' || override === 'light' ? override : (prefersDark ? 'dark' : 'light');
+		document.documentElement.setAttribute('data-theme', theme);
+		if (theme === 'dark') {
+			document.documentElement.style.backgroundColor = '#0a0c14';
+			document.documentElement.style.color = '#eaeef6';
+		}
 	})();
 </script>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -132,7 +134,7 @@ const jsonLd = [
 <title>{title}</title>
 <meta name="title" content={title} />
 <meta name="description" content={description} />
-<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+<script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={type} />

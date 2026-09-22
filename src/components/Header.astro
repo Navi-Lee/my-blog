@@ -1,17 +1,18 @@
 ---
-import { SITE_TITLE } from '../consts';
+import { CONTACT_EMAIL, GITHUB_URL, SITE_TITLE } from '../consts';
 import HeaderLink from './HeaderLink.astro';
 ---
 
+<a class="skip-link" href="#main-content">跳转到主要内容</a>
 <header>
-	<nav>
+	<nav aria-label="主导航">
 		<h2><a href="/">{SITE_TITLE}</a></h2>
 		<div class="internal-links">
 			<HeaderLink href="/">主页</HeaderLink>
 			<HeaderLink href="/blog">Blog</HeaderLink>
 			<HeaderLink href="/social">社交媒体</HeaderLink>
 			<HeaderLink href="/about">关于我</HeaderLink>
-			<HeaderLink href="mailto:Leenavi@foxmail.com">Email</HeaderLink>
+			<HeaderLink href={`mailto:${CONTACT_EMAIL}`}>Email</HeaderLink>
 		</div>
 
 		<div class="theme-toggle-container">
@@ -27,7 +28,7 @@ import HeaderLink from './HeaderLink.astro';
 		</div>
 
 		<div class="social-links">
-			<a href="https://github.com/navi-lee" target="_blank">
+			<a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
 				<span class="sr-only">Go to Navi Lee's GitHub</span>
 				<svg viewBox="0 0 16 16" aria-hidden="true" width="32" height="32">
 					<path
@@ -145,11 +146,6 @@ import HeaderLink from './HeaderLink.astro';
 		display: block;
 	}
 
-	.theme-toggle:focus {
-		outline: 2px solid rgba(var(--black), 10%);
-		outline-offset: 2px;
-		border-radius: 6px;
-	}
 
 	@media (max-width: 720px) {
 		header {
@@ -217,7 +213,8 @@ import HeaderLink from './HeaderLink.astro';
 	(function () {
 		const root = document.documentElement;
 		const toggleId = 'theme-toggle';
-		const preferenceKey = 'theme-preference';
+		const preferenceKey = 'theme-override';
+		const browserTheme = window.matchMedia('(prefers-color-scheme: dark)');
 
 		function applyTheme(theme: string) {
 			root.setAttribute('data-theme', theme);
@@ -239,21 +236,28 @@ import HeaderLink from './HeaderLink.astro';
 		function init() {
 			const saved = (() => {
 				try {
-					return localStorage.getItem(preferenceKey);
+					return sessionStorage.getItem(preferenceKey);
 				} catch (e) {
 					return null;
 				}
 			})();
-			const prefersDark =
-				window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-			applyTheme(saved || (prefersDark ? 'dark' : 'light'));
+			applyTheme(saved === 'dark' || saved === 'light' ? saved : (browserTheme.matches ? 'dark' : 'light'));
+			browserTheme.addEventListener('change', (event) => {
+				let override: string | null = null;
+				try {
+					override = sessionStorage.getItem(preferenceKey);
+				} catch (e) {}
+				if (override !== 'dark' && override !== 'light') {
+					applyTheme(event.matches ? 'dark' : 'light');
+				}
+			});
 
 			const btn = document.getElementById(toggleId);
 			if (btn)
 				btn.addEventListener('click', () => {
 					const nextTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
 					try {
-						localStorage.setItem(preferenceKey, nextTheme);
+						sessionStorage.setItem(preferenceKey, nextTheme);
 					} catch (e) {}
 					applyTheme(nextTheme);
 				});

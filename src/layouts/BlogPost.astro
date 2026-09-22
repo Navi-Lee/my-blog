@@ -9,6 +9,7 @@ import FormattedDate from "../components/FormattedDate.astro";
 import GiscusComments from "../components/GiscusComments.astro";
 import Header from "../components/Header.astro";
 import { SITE_AUTHOR, SITE_TITLE, SITE_URL } from "../consts";
+import { serializeJsonLd } from "../utils/jsonLd";
 
 type Props = CollectionEntry<"blog">["data"];
 
@@ -84,11 +85,11 @@ const breadcrumbJsonLd = {
     />
     <script
       type="application/ld+json"
-      set:html={JSON.stringify(articleJsonLd)}
+      set:html={serializeJsonLd(articleJsonLd)}
     ></script>
     <script
       type="application/ld+json"
-      set:html={JSON.stringify(breadcrumbJsonLd)}
+      set:html={serializeJsonLd(breadcrumbJsonLd)}
     ></script>
     <style>
       main {
@@ -359,8 +360,8 @@ const breadcrumbJsonLd = {
 
   <body>
     <Header />
-    <main>
-      <article>
+    <main id="main-content" tabindex="-1">
+      <article data-pagefind-body>
         <div class="hero-image">
           {heroImage && (
             <Image
@@ -375,7 +376,7 @@ const breadcrumbJsonLd = {
         <div class="article-layout">
           <div class="prose">
             <div class="title">
-              <div class="date">
+              <div class="date" data-pagefind-ignore>
                 <FormattedDate date={pubDate} />
                 {latestChangeDate && (
                   <div class="last-updated-on">
@@ -385,7 +386,7 @@ const breadcrumbJsonLd = {
               </div>
               <h1>{title}</h1>
               <p class="title-description">{description}</p>
-              <div class="reading-note" aria-label="阅读提示">
+              <div class="reading-note" aria-label="阅读提示" data-pagefind-ignore>
                 <span></span>向下滚动可查看阅读进度
               </div>
               <hr />
