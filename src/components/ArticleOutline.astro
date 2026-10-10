@@ -264,6 +264,7 @@
   const articleLayout = document.querySelector<HTMLElement>(".article-layout");
   const articleTitle = document.querySelector<HTMLElement>(".title");
   const pageHeader = document.querySelector<HTMLElement>("body > header");
+  const pageFooter = document.querySelector<HTMLElement>("body > footer");
 
   function updateOutlinePosition() {
     if (!outline || !articleLayout) return;
@@ -279,9 +280,13 @@
       ? headerRect.bottom <= 0
       : (articleTitle?.getBoundingClientRect().bottom ?? layoutRect.top) <= 20;
     const articleExitLine = Math.min(360, window.innerHeight * 0.42);
+    const footerHasEntered = pageFooter
+      ? pageFooter.getBoundingClientRect().top < window.innerHeight
+      : false;
     const outsideArticle =
       layoutRect.bottom <= articleExitLine ||
-      layoutRect.top >= window.innerHeight;
+      layoutRect.top >= window.innerHeight ||
+      footerHasEntered;
 
     outline.classList.toggle("is-centered", headerHasPassed);
     outline.classList.toggle("is-outside", outsideArticle);

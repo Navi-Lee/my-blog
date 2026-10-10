@@ -384,7 +384,7 @@ const breadcrumbJsonLd = {
                 )}
               </div>
               <h1>{title}</h1>
-              <p class="title-description">{description}</p>
+              {description && <p class="title-description">{description}</p>}
               <div class="reading-note" aria-label="阅读提示" data-pagefind-ignore>
                 <span></span>向下滚动可查看阅读进度
               </div>

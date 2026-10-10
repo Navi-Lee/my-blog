@@ -1,6 +1,6 @@
 ---
 title: "flat ajax call 柯里化 千分位逗号隔开"
-description: "JavaScript 常见手写题笔记：数组与对象扁平化、Ajax、call 实现和函数柯里化。"
+description: ""
 pubDate: "September 6 2026"
 tags: ["JS", "手写题"]
 Class: ["前端算法手写八股", "技术相关"]
